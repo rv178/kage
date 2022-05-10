@@ -1,10 +1,13 @@
-BINARY=chess-engine
-BUILD_FLAGS=--release
-all: build
+BINARY=cranium
+all: dev
 
-build:
-	@cargo build $(BUILD_FLAGS)
+release:
+	@cargo build --release 
 	@cp ./target/release/$(BINARY) ./bin/$(BINARY)
+
+dev:
+	@cargo build
+	@cp ./target/debug/$(BINARY) ./bin/$(BINARY)
 
 check:
 	@cargo fmt
