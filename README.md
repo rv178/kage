@@ -9,9 +9,11 @@ Chess engine written in Rust.
 
 ### Compiling
 
+You can compile it using `cargo` or install [baker](https://github.com/rv178/baker) and compile it like this:
+
 ```
-make setup
-make release
+bake setup
+bake release
 ```
 
 A binary will be copied to `./bin/cranium`

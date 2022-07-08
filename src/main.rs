@@ -1,6 +1,6 @@
+use colored::Colorize;
 use std::env;
 use std::process::exit;
-use colored::Colorize;
 
 mod debug;
 mod fen;
