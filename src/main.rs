@@ -1,4 +1,3 @@
-use colored::Colorize;
 use std::env;
 use std::process::exit;
 
@@ -38,20 +37,22 @@ fn main_fen(fen_str: String) {
 }
 
 fn help() {
-    print!("\n");
-    print!("{}", "Cranium ".green().bold());
-    println!("{}", env!("CARGO_PKG_VERSION"));
-    println!("  Chess engine written in Rust.");
-    print!("\n");
-    println!("{}", "USAGE:".yellow());
-    println!("  cranium {}", "[OPTIONS]".green());
-    print!("\n");
-    println!("{}", "OPTIONS:".yellow());
-    println!("  {}", "-h, --help".green());
-    println!("      Show this help message.");
-    println!("  {}", "-f, --fen <FEN_STRING>".green());
-    println!("      Parse FEN string.");
-    print!("\n");
-    println!("{}", "EXAMPLES:".yellow());
-    println!("  cranium --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/PNBQKB1R w KQkq - 1 2\"");
+    let help_msg = format!(
+        "\x1b[32m\x1b[1mCranium \x1b[0m {}
+    Chess engine written in Rust.
+
+\x1b[33mUSAGE:\x1b[0m
+    cranium \x1b[32m[OPTIONS]\x1b[0m
+
+\x1b[33mOPTIONS:\x1b[0m
+    \x1b[32m-h, --help\x1b[0m
+        Show this help message.
+    \x1b[32m-f, --fen <FEN_STRING>\x1b[0m
+        Parse FEN string.
+
+\x1b[33mEXAMPLES:\x1b[0m
+    cranium --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/PNBQKB1R w KQkq - 1 2\"",
+        env!("CARGO_PKG_VERSION")
+    );
+    println!("{}", help_msg);
 }

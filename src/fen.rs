@@ -48,6 +48,13 @@ impl GameStatus {
     }
 }
 
+#[macro_export]
+macro_rules! fen_log {
+    ($($arg:tt)*) => {
+        println!("\x1b[32mCranium (fen):\x1b[0m {}", format!($($arg)*));
+    };
+}
+
 pub fn return_state(fen: &str) -> GameStatus {
     let state = parse_fen(GameStatus::default_gamestatus(), fen);
     state
@@ -61,7 +68,7 @@ fn parse_fen(def: GameStatus, input: &str) -> GameStatus {
 
     let colour = active_side(fen.next().unwrap());
     if colour == Colour::Undefined {
-        println!("Invalid FEN string: Failed to parse active colour.");
+        fen_log!("Invalid FEN string: Failed to parse active colour.");
         exit(1);
     }
 
@@ -103,7 +110,7 @@ fn castling_ability(input: &str) -> [bool; 4] {
                 'k' => castling_id[2] = true,
                 'q' => castling_id[3] = true,
                 _ => {
-                    println!("Invalid FEN string: Failed to parse castling ability.");
+                    fen_log!("Invalid FEN string: Failed to parse castling ability.");
                     exit(1);
                 }
             }
@@ -136,7 +143,7 @@ fn parse_en_passant_squares(input: &str) -> Vec<String> {
 
         en_passant_vec
     } else {
-        println!("Invalid FEN string: Failed to parse en passant squares.");
+        fen_log!("Invalid FEN string: Failed to parse en passant squares.");
         exit(1);
     }
 }
@@ -200,7 +207,7 @@ fn pieces(input: &str) -> Vec<Option<Piece>> {
     let lines: Vec<_> = input.split('/').collect();
 
     if lines.len() != 8 {
-        println!("Invalid FEN string: Failed to parse placement.");
+        fen_log!("Invalid FEN string: Failed to parse placement.");
         exit(1);
     }
 
@@ -222,7 +229,7 @@ fn pieces(input: &str) -> Vec<Option<Piece>> {
                     }
 
                     None => {
-                        println!("Invalid FEN string: Failed to parse piece.");
+                        fen_log!("Invalid FEN string: Failed to parse piece.");
                         exit(1);
                     }
                 },
@@ -235,7 +242,7 @@ fn pieces(input: &str) -> Vec<Option<Piece>> {
 fn increment_file(file: &mut usize, n: usize, _rank: &str) {
     *file += n;
     if *file > 8 {
-        println!("Invalid FEN string: Failed to parse placement.");
+        fen_log!("Invalid FEN string: Failed to parse placement.");
         exit(1);
     }
 }
