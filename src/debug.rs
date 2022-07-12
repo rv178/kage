@@ -14,8 +14,8 @@ pub fn print_board(game_state: &GameStatus) {
     fn vec_to_2d_vec(vec: Vec<char>) -> Vec<Vec<char>> {
         let mut vec_2d: Vec<Vec<char>> = Vec::new();
         let mut vec_1d: Vec<char> = Vec::new();
-        for i in 0..vec.len() {
-            vec_1d.push(vec[i]);
+        for item in vec {
+            vec_1d.push(item);
             if vec_1d.len() == 8 {
                 vec_2d.push(vec_1d);
                 vec_1d = Vec::new();
@@ -26,7 +26,7 @@ pub fn print_board(game_state: &GameStatus) {
 
     let board = vec_to_2d_vec(symbol_vec);
 
-    fn print_board_vec(array: &Vec<Vec<char>>) -> String {
+    fn print_board_vec(array: &[Vec<char>]) -> String {
         let mut x = 9;
         println!("+---+---+---+---+---+---+---+---+");
         let mut buf = String::new();
@@ -35,7 +35,7 @@ pub fn print_board(game_state: &GameStatus) {
                 let p_info = format!("| {} ", col);
                 buf.push_str(&p_info);
             }
-            x = x - 1;
+            x -= 1;
 
             let ranks = format!("| {} \n", x);
             buf.push_str(&ranks);
@@ -61,21 +61,21 @@ pub fn print_en_passant_squares(game_state: &GameStatus) {
         for i in game_state.en_passant.as_ref().unwrap() {
             print!("{} ", i);
         }
-        print!("\n");
+        println!();
     }
 }
 
 pub fn print_castling_ability(game_state: &GameStatus) {
-    if game_state.castling_id[0] == true {
+    if game_state.castling_id[0] {
         println!("White can castle kingside.");
     }
-    if game_state.castling_id[1] == true {
+    if game_state.castling_id[1] {
         println!("White can castle queenside.");
     }
-    if game_state.castling_id[2] == true {
+    if game_state.castling_id[2] {
         println!("Black can castle kingside.");
     }
-    if game_state.castling_id[3] == true {
+    if game_state.castling_id[3] {
         println!("Black can castle queenside.");
     }
 }

@@ -20,7 +20,7 @@ fn main() {
             }
         }
         _ => {
-            println!("Invalid option '{}'.", args[1].to_string());
+            println!("Invalid option '{}'.", args[1]);
             exit(1);
         }
     }

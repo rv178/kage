@@ -48,6 +48,28 @@ impl GameStatus {
     }
 }
 
+impl Piece {
+    fn from_char(piece_char: char) -> Option<Piece> {
+        let (color, kind, symbol) = match piece_char {
+            'P' => (Colour::White, Kind::Pawn, 'P'),
+            'N' => (Colour::White, Kind::Knight, 'N'),
+            'B' => (Colour::White, Kind::Bishop, 'B'),
+            'R' => (Colour::White, Kind::Rook, 'R'),
+            'Q' => (Colour::White, Kind::Queen, 'Q'),
+            'K' => (Colour::White, Kind::King, 'K'),
+            'p' => (Colour::Black, Kind::Pawn, 'p'),
+            'n' => (Colour::Black, Kind::Knight, 'n'),
+            'b' => (Colour::Black, Kind::Bishop, 'b'),
+            'r' => (Colour::Black, Kind::Rook, 'r'),
+            'q' => (Colour::Black, Kind::Queen, 'q'),
+            'k' => (Colour::Black, Kind::King, 'k'),
+            _ => return None,
+        };
+
+        Some(Piece { colour: color, kind, symbol })
+    }
+}
+
 #[macro_export]
 macro_rules! fen_log {
     ($($arg:tt)*) => {
@@ -56,8 +78,7 @@ macro_rules! fen_log {
 }
 
 pub fn return_state(fen: &str) -> GameStatus {
-    let state = parse_fen(GameStatus::default_gamestatus(), fen);
-    state
+    parse_fen(GameStatus::default_gamestatus(), fen)
 }
 
 fn parse_fen(def: GameStatus, input: &str) -> GameStatus {
@@ -149,9 +170,7 @@ fn parse_en_passant_squares(input: &str) -> Vec<String> {
 }
 
 fn en_passant(input: &str) -> Option<Vec<String>> {
-    if input == "-" {
-        None
-    } else if input.chars().all(char::is_whitespace) {
+    if input.chars().all(char::is_whitespace) | input.contains('-') {
         None
     } else {
         Some(parse_en_passant_squares(input))
@@ -161,7 +180,7 @@ fn en_passant(input: &str) -> Option<Vec<String>> {
 fn halfmove_clock(input: &str) -> u32 {
     let mut halfmove_clock = String::new();
     for c in input.chars() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             halfmove_clock.push(c);
         }
     }
@@ -171,40 +190,18 @@ fn halfmove_clock(input: &str) -> u32 {
 fn fullmove_count(input: &str) -> u32 {
     let mut fullmove_clock = String::new();
     for c in input.chars() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             fullmove_clock.push(c);
         }
     }
     fullmove_clock.parse::<u32>().unwrap()
 }
 
-// --- taken from https://github.com/ucarion/fen/blob/master/src/lib.rs ---
-
-impl Piece {
-    fn from_char(piece_char: char) -> Option<Piece> {
-        let (color, kind, symbol) = match piece_char {
-            'P' => (Colour::White, Kind::Pawn, 'P'),
-            'N' => (Colour::White, Kind::Knight, 'N'),
-            'B' => (Colour::White, Kind::Bishop, 'B'),
-            'R' => (Colour::White, Kind::Rook, 'R'),
-            'Q' => (Colour::White, Kind::Queen, 'Q'),
-            'K' => (Colour::White, Kind::King, 'K'),
-            'p' => (Colour::Black, Kind::Pawn, 'p'),
-            'n' => (Colour::Black, Kind::Knight, 'n'),
-            'b' => (Colour::Black, Kind::Bishop, 'b'),
-            'r' => (Colour::Black, Kind::Rook, 'r'),
-            'q' => (Colour::Black, Kind::Queen, 'q'),
-            'k' => (Colour::Black, Kind::King, 'k'),
-            _ => return None,
-        };
-
-        Some(Piece { colour: color, kind, symbol })
-    }
-}
+// https://github.com/ucarion/fen/blob/master/src/lib.rs#L139-L173
 
 fn pieces(input: &str) -> Vec<Option<Piece>> {
     let mut placement = vec![None; 64];
-    let lines: Vec<_> = input.split('/').collect();
+    let lines: Vec<&str> = input.split('/').collect();
 
     if lines.len() != 8 {
         fen_log!("Invalid FEN string: Failed to parse placement.");
@@ -212,16 +209,17 @@ fn pieces(input: &str) -> Vec<Option<Piece>> {
     }
 
     for (rank, pieces) in lines.iter().enumerate() {
-        let mut file = 0;
+        let mut file: usize = 0;
 
         for piece_char in pieces.chars() {
             match piece_char.to_digit(10) {
-                // This is indicating a few blanks
                 Some(n) => {
-                    increment_file(&mut file, n as usize, pieces);
+                    file += n as usize;
+                    if file > 8 {
+                        fen_log!("Invalid FEN string: Failed to parse placement.");
+                        exit(1);
+                    }
                 }
-
-                // This is indicating a piece
                 None => match Piece::from_char(piece_char) {
                     Some(piece) => {
                         placement[rank * 8 + file] = Some(piece);
@@ -237,12 +235,4 @@ fn pieces(input: &str) -> Vec<Option<Piece>> {
         }
     }
     placement
-}
-
-fn increment_file(file: &mut usize, n: usize, _rank: &str) {
-    *file += n;
-    if *file > 8 {
-        fen_log!("Invalid FEN string: Failed to parse placement.");
-        exit(1);
-    }
 }
