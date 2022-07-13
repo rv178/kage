@@ -7,33 +7,34 @@ mod fen;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    match args[1].as_str() {
-        "-h" | "--help" => {
-            help();
-        }
-        "-f" | "--fen" => {
-            if args.len() == 3 {
-                let fen = &args[2];
-                main_fen(fen.to_string());
-            } else {
-                println!("Error: missing FEN string");
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "-h" | "--help" => {
+                help();
+            }
+            "-f" | "--fen" => {
+                if args.len() == 3 {
+                    let fen = &args[2];
+
+                    let game_state = fen::return_state(&fen);
+                    debug::print_board(&game_state);
+                    debug::print_side_to_move(&game_state);
+                    debug::print_castling_ability(&game_state);
+                    debug::print_en_passant_squares(&game_state);
+                    debug::print_full_moves(&game_state);
+                    debug::print_half_moves(&game_state);
+                } else {
+                    println!("Error: missing FEN string");
+                }
+            }
+            _ => {
+                println!("Invalid option '{}'.", args[1]);
+                exit(1);
             }
         }
-        _ => {
-            println!("Invalid option '{}'.", args[1]);
-            exit(1);
-        }
+    } else if args.len() == 1 {
+        println!("\x1b[32m\x1b[1mCranium \x1b[0m {}", env!("CARGO_PKG_VERSION"));
     }
-}
-
-fn main_fen(fen_str: String) {
-    let game_state = fen::return_state(&fen_str);
-    debug::print_board(&game_state);
-    debug::print_side_to_move(&game_state);
-    debug::print_castling_ability(&game_state);
-    debug::print_en_passant_squares(&game_state);
-    debug::print_full_moves(&game_state);
-    debug::print_half_moves(&game_state);
 }
 
 fn help() {
