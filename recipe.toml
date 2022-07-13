@@ -1,5 +1,12 @@
+[env]
+BIN_NAME="cranium"
+COMPILER_FLAGS="--release"
+
 [build]
-cmd = "cargo build && cp -r ./target/debug/cranium ./bin/cranium"
+cmd = """
+cargo build &&
+cp -r ./target/debug/$BIN_NAME ./bin/$BIN_NAME
+"""
 
 [[custom]]
 name = "clean"
@@ -8,12 +15,19 @@ run = false
 
 [[custom]]
 name = "setup"
-cmd = "mkdir -p bin && rustup install stable && rustup default stable"
+cmd = """
+mkdir -p bin &&
+rustup install stable &&
+rustup default stable
+"""
 run = false
 
 [[custom]]
 name = "release"
-cmd = "cargo build --release && cp -r ./target/release/cranium ./bin/cranium"
+cmd = """
+cargo build $COMPILER_FLAGS &&
+cp -r ./target/release/$BIN_NAME ./bin/$BIN_NAME
+"""
 run = false
 
 [[pre]]
