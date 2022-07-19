@@ -4,6 +4,13 @@ use std::process::exit;
 mod debug;
 mod fen;
 
+#[macro_export]
+macro_rules! main_log {
+    ($($arg:tt)*) => {
+        println!("\x1b[32mCranium (main):\x1b[0m {}", format!($($arg)*));
+    };
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -16,7 +23,7 @@ fn main() {
                 if args.len() == 3 {
                     let fen = &args[2];
 
-                    let game_state = fen::return_state(&fen);
+                    let game_state = fen::return_state(fen);
                     debug::print_board(&game_state);
                     debug::print_side_to_move(&game_state);
                     debug::print_castling_ability(&game_state);
@@ -24,11 +31,11 @@ fn main() {
                     debug::print_full_moves(&game_state);
                     debug::print_half_moves(&game_state);
                 } else {
-                    println!("Error: missing FEN string");
+                    fen_log!("Error: missing FEN string");
                 }
             }
             _ => {
-                println!("Invalid option '{}'.", args[1]);
+                main_log!("Invalid option '{}'.", args[1]);
                 exit(1);
             }
         }

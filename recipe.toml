@@ -1,20 +1,19 @@
 [env]
 BIN_NAME="cranium"
 COMPILER_FLAGS="--release"
+INSTALL_PREFIX="/usr/bin"
 
 [build]
 cmd = """
-cargo build &&
-cp -r ./target/debug/$BIN_NAME ./bin/$BIN_NAME
+cargo build $COMPILER_FLAGS &&
+cp -r ./target/release/$BIN_NAME ./bin/$BIN_NAME
 """
 
-[[custom]]
-name = "clean"
+[custom.clean]
 cmd = "cargo clean"
 run = false
 
-[[custom]]
-name = "setup"
+[custom.setup]
 cmd = """
 mkdir -p bin &&
 rustup install stable &&
@@ -22,14 +21,14 @@ rustup default stable
 """
 run = false
 
-[[custom]]
-name = "release"
-cmd = """
-cargo build $COMPILER_FLAGS &&
-cp -r ./target/release/$BIN_NAME ./bin/$BIN_NAME
-"""
+[custom.install]
+name = "install"
+cmd = "cp ./bin/$BIN_NAME $INSTALL_PREFIX/$BIN_NAME"
 run = false
 
-[[pre]]
-name = "fmt"
+[custom.uninstall]
+cmd = "rm -rf $INSTALL_PREFIX/$BIN_NAME"
+run = false
+
+[pre.fmt]
 cmd = "cargo fmt"
