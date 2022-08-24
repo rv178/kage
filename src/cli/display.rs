@@ -1,4 +1,4 @@
-use crate::fen::GameStatus;
+use crate::engine::fen::GameStatus;
 
 pub fn print_board(game_state: &GameStatus) {
     let mut symbol_vec: Vec<char> = Vec::new();

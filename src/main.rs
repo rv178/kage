@@ -1,8 +1,10 @@
+mod cli;
+mod engine;
+
 use std::env;
 use std::process::exit;
-
-mod debug;
-mod fen;
+use cli::display;
+use engine::fen;
 
 #[macro_export]
 macro_rules! main_log {
@@ -24,12 +26,12 @@ fn main() {
                     let fen = &args[2];
 
                     let game_state = fen::return_state(fen);
-                    debug::print_board(&game_state);
-                    debug::print_side_to_move(&game_state);
-                    debug::print_castling_ability(&game_state);
-                    debug::print_en_passant_squares(&game_state);
-                    debug::print_full_moves(&game_state);
-                    debug::print_half_moves(&game_state);
+                    display::print_board(&game_state);
+                    display::print_side_to_move(&game_state);
+                    display::print_castling_ability(&game_state);
+                    display::print_en_passant_squares(&game_state);
+                    display::print_full_moves(&game_state);
+                    display::print_half_moves(&game_state);
                 } else {
                     fen_log!("Error: missing FEN string");
                 }
