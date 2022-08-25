@@ -1,10 +1,6 @@
-mod cli;
-mod engine;
-
+use engine::{fen::display, fen::parser, fen_log};
 use std::env;
 use std::process::exit;
-use cli::display;
-use engine::fen;
 
 #[macro_export]
 macro_rules! main_log {
@@ -25,7 +21,7 @@ fn main() {
                 if args.len() == 3 {
                     let fen = &args[2];
 
-                    let game_state = fen::return_state(fen);
+                    let game_state = parser::return_state(fen);
                     display::print_board(&game_state);
                     display::print_side_to_move(&game_state);
                     display::print_castling_ability(&game_state);
