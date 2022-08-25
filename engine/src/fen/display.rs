@@ -87,3 +87,12 @@ pub fn print_half_moves(game_state: &GameStatus) {
 pub fn print_full_moves(game_state: &GameStatus) {
     println!("Full moves: {} move(s)", game_state.full_move_count);
 }
+
+pub fn print_all(game_state: &GameStatus) {
+    print_board(game_state);
+    print_side_to_move(game_state);
+    print_en_passant_squares(game_state);
+    print_castling_ability(game_state);
+    print_half_moves(game_state);
+    print_full_moves(game_state);
+}
