@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::process::exit;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -140,40 +139,56 @@ fn castling_ability(input: &str) -> [bool; 4] {
     }
 }
 
-fn parse_en_passant_squares(input: &str) -> Vec<String> {
-    let re = Regex::new(r"^-|[a-g]\d$").unwrap();
-    if re.is_match(input) {
-        let mut char_vec: Vec<String> = Vec::new();
-        let mut split_vec: Vec<String> = Vec::new();
-        let mut en_passant_vec: Vec<String> = Vec::new();
-
-        let split_string = input.split(|c: char| c.is_whitespace());
-        for s in split_string {
-            for c in s.chars() {
-                char_vec.push(c.to_string());
-            }
-        }
-        for i in 0..char_vec.len() {
-            if i % 2 == 0 {
-                split_vec.push(char_vec[i].to_string());
-                split_vec.push(char_vec[i + 1].to_string());
-                en_passant_vec.push(split_vec.join(""));
-                split_vec.clear();
-            }
-        }
-
-        en_passant_vec
-    } else {
-        fen_log!("Invalid FEN string: Failed to parse en passant squares.");
-        exit(1);
-    }
-}
-
+// rather atrocious, but it works
 fn en_passant(input: &str) -> Option<Vec<String>> {
     if input.chars().all(char::is_whitespace) | input.contains('-') {
         None
     } else {
-        Some(parse_en_passant_squares(input))
+        let chars = input.chars().collect::<Vec<char>>();
+
+        if chars.len() % 2 == 0 {
+            let mut ep_vec = Vec::new();
+
+            for i in 0..chars.len() {
+                if i % 2 == 0 {
+                    let valid_chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+                    let mut invalid = true;
+
+                    for c in valid_chars.iter() {
+                        if chars[i] == *c {
+                            invalid = false;
+                        }
+                    }
+
+                    if i < chars.len() - 1 {
+                        if !chars[i].is_alphabetic() | !chars[i + 1].is_numeric() {
+                            fen_log!("Invalid FEN string: Failed to parse en passant square.");
+                            exit(1);
+                        }
+
+                        if chars[i + 1]
+                            .to_digit(10)
+                            .expect("Could not parse character to digit (en passant)")
+                            > 8
+                        {
+                            invalid = true;
+                        }
+                    }
+
+                    if invalid {
+                        fen_log!("Invalid FEN string: Failed to parse en passant square.");
+                        exit(1);
+                    }
+
+                    ep_vec.push(format!("{}{}", chars[i], chars[i + 1]));
+                }
+            }
+
+            Some(ep_vec)
+        } else {
+            fen_log!("Invalid FEN string: Failed to parse en passant square.");
+            exit(1);
+        }
     }
 }
 
