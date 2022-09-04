@@ -1,3 +1,5 @@
+use engine::bitboard::convert;
+use engine::fen;
 use engine::{fen::display, fen::parser, fen_log};
 use std::env;
 use std::process::exit;
@@ -23,9 +25,14 @@ fn main() {
 
                     let game_state = parser::return_state(fen);
                     display::print_all(&game_state);
+                    println!("Now printing bitboard...");
+                    convert(game_state);
                 } else {
                     fen_log!("Error: missing FEN string");
                 }
+            }
+            "-d" | "--default" => {
+                display::print_all(&fen::default());
             }
             _ => {
                 main_log!("Invalid option '{}'.", args[1]);
