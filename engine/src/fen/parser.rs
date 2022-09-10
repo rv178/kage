@@ -14,21 +14,22 @@ pub fn return_state(fen: &str) -> GameStatus {
 
 fn parse_fen(def: GameStatus, input: &str) -> GameStatus {
     let mut fen = input.split_whitespace();
-    let mut state = def;
+    let mut state: GameStatus = def;
 
-    let pieces = pieces(fen.next().unwrap());
+    let pieces: [Option<Piece>; 64] = pieces(fen.next().unwrap());
 
-    let colour = active_side(fen.next().unwrap());
+    let colour: Colour = active_side(fen.next().unwrap());
+
     if colour == Colour::Undefined {
         fen_log!("Invalid FEN string: Failed to parse active colour.");
         exit(1);
     }
 
-    let castling_id = castling_ability(fen.next().unwrap());
+    let castling_id: [bool; 4] = castling_ability(fen.next().unwrap());
 
     let en_passant = en_passant(fen.next().unwrap());
-    let half_move_clock = halfmove_clock(fen.next().unwrap());
-    let full_move_count = fullmove_count(fen.next().unwrap());
+    let half_move_clock: u32 = halfmove_clock(fen.next().unwrap());
+    let full_move_count: u32 = fullmove_count(fen.next().unwrap());
 
     state.pieces = pieces;
     state.side_to_move = colour;
@@ -146,8 +147,8 @@ fn fullmove_count(input: &str) -> u32 {
 
 // https://github.com/ucarion/fen/blob/master/src/lib.rs#L139-L173
 
-fn pieces(input: &str) -> Vec<Option<Piece>> {
-    let mut placement = vec![None; 64];
+fn pieces(input: &str) -> [Option<Piece>; 64] {
+    let mut placement = [None; 64];
     let lines: Vec<&str> = input.split('/').collect();
 
     if lines.len() != 8 {

@@ -2,14 +2,14 @@ pub mod bitboard;
 pub mod fen;
 //pub mod movegen;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Piece {
     pub kind: Kind,
     pub colour: Colour,
     pub symbol: char,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Kind {
     King,
     Queen,
@@ -19,16 +19,16 @@ pub enum Kind {
     Pawn,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Colour {
     White,
     Black,
     Undefined,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GameStatus {
-    pub pieces: Vec<Option<Piece>>,
+    pub pieces: [Option<Piece>; 64],
     pub side_to_move: Colour,
     pub castling_id: [bool; 4],
     pub en_passant: Option<Vec<String>>,
@@ -39,7 +39,7 @@ pub struct GameStatus {
 impl GameStatus {
     fn default_gamestatus() -> GameStatus {
         GameStatus {
-            pieces: vec![None; 64],
+            pieces: [None; 64],
             side_to_move: Colour::White,
             castling_id: [true, true, true, true],
             en_passant: None,

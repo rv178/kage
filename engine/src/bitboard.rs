@@ -20,7 +20,7 @@ pub struct BitPos {
 }
 
 impl BitPos {
-    fn new(pieces: Vec<Option<Piece>>) -> BitPos {
+    fn new(pieces: [Option<Piece>; 64]) -> BitPos {
         BitPos {
             wp: BitBoard(gen_bitboard(&pieces, 'P')),
             wn: BitBoard(gen_bitboard(&pieces, 'N')),
@@ -43,7 +43,7 @@ pub fn convert(game_status: GameStatus) {
     println!("{:?}", positions);
 }
 
-pub fn gen_bitboard(pieces: &Vec<Option<Piece>>, compare: char) -> u64 {
+pub fn gen_bitboard(pieces: &[Option<Piece>; 64], compare: char) -> u64 {
     let mut bin_str = String::new();
     for piece in pieces {
         if let Some(piece) = piece {
