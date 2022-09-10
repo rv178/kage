@@ -51,23 +51,23 @@ impl GameStatus {
 
 impl Piece {
     fn from_char(piece_char: char) -> Option<Piece> {
-        let (color, kind, symbol) = match piece_char {
-            'P' => (Colour::White, Kind::Pawn, 'P'),
-            'N' => (Colour::White, Kind::Knight, 'N'),
-            'B' => (Colour::White, Kind::Bishop, 'B'),
-            'R' => (Colour::White, Kind::Rook, 'R'),
-            'Q' => (Colour::White, Kind::Queen, 'Q'),
-            'K' => (Colour::White, Kind::King, 'K'),
-            'p' => (Colour::Black, Kind::Pawn, 'p'),
-            'n' => (Colour::Black, Kind::Knight, 'n'),
-            'b' => (Colour::Black, Kind::Bishop, 'b'),
-            'r' => (Colour::Black, Kind::Rook, 'r'),
-            'q' => (Colour::Black, Kind::Queen, 'q'),
-            'k' => (Colour::Black, Kind::King, 'k'),
+        let (colour, kind) = match piece_char {
+            'P' => (Colour::White, Kind::Pawn),
+            'N' => (Colour::White, Kind::Knight),
+            'B' => (Colour::White, Kind::Bishop),
+            'R' => (Colour::White, Kind::Rook),
+            'Q' => (Colour::White, Kind::Queen),
+            'K' => (Colour::White, Kind::King),
+            'p' => (Colour::Black, Kind::Pawn),
+            'n' => (Colour::Black, Kind::Knight),
+            'b' => (Colour::Black, Kind::Bishop),
+            'r' => (Colour::Black, Kind::Rook),
+            'q' => (Colour::Black, Kind::Queen),
+            'k' => (Colour::Black, Kind::King),
             _ => return None,
         };
 
-        Some(Piece { colour: color, kind, symbol })
+        Some(Piece { colour, kind, symbol: piece_char })
     }
 }
 
@@ -75,7 +75,6 @@ impl Piece {
 /*
 #[rustfmt::skip]
 pub enum Squares {
-    None,
     A1, B1, C1, D1, E1, F1, G1, H1,
     A2, B2, C2, D2, E2, F2, G2, H2,
     A3, B3, C3, D3, E3, F3, G3, H3,
