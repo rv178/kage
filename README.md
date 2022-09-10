@@ -4,8 +4,9 @@ Chess engine written in Rust.
 
 ### Features
 
--   FEN string parser
--   nothing else
+-	FEN string parser
+- 	bitboard converter (WIP)
+-	nothing else
 
 ### Compiling
 
@@ -13,7 +14,7 @@ You can compile it using `cargo` or install [baker](https://github.com/rv178/bak
 
 ```
 bake setup
-bake release
+bake
 ```
 
 A binary will be copied to `./bin/cranium`
