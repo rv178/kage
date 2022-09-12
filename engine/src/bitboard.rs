@@ -44,7 +44,7 @@ pub fn convert(game_status: GameStatus) {
 }
 
 impl BitBoard {
-    pub fn gen(pieces: &[Option<Piece>; 64], compare: char) -> BitBoard {
+    pub fn gen(pieces: &[Option<Piece>; 64], compare: char) -> Self {
         let mut bin_str = String::new();
         for piece in pieces {
             if let Some(piece) = piece {
@@ -58,6 +58,27 @@ impl BitBoard {
             }
         }
 
-        BitBoard(u64::from_str_radix(&bin_str, 2).unwrap())
+        // convert binary string to decimal (u64)
+        Self(u64::from_str_radix(&bin_str, 2).unwrap())
+    }
+    // check if bitboard is empty (u64 = 0)
+    pub fn is_empty(&self) -> bool {
+        self.0 == 0
+    }
+    // change bitboard value to 0
+    pub fn clear() -> Self {
+        Self(0)
+    }
+    // and
+    pub fn bitand(self, other: Self) -> Self {
+        Self(self.0 & other.0)
+    }
+    // or
+    pub fn bitor(self, other: Self) -> Self {
+        Self(self.0 | other.0)
+    }
+    // multiplication
+    pub fn mul(self, other: Self) -> Self {
+        Self(self.0.wrapping_mul(other.0))
     }
 }

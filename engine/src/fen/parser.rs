@@ -28,8 +28,8 @@ fn parse_fen(def: GameStatus, input: &str) -> GameStatus {
     let castling_id: [bool; 4] = castling_ability(fen.next().unwrap());
 
     let en_passant = en_passant(fen.next().unwrap());
-    let half_move_clock: u32 = halfmove_clock(fen.next().unwrap());
-    let full_move_count: u32 = fullmove_count(fen.next().unwrap());
+    let half_move_clock: u16 = halfmove_clock(fen.next().unwrap());
+    let full_move_count: u16 = fullmove_count(fen.next().unwrap());
 
     state.pieces = pieces;
     state.side_to_move = colour;
@@ -125,24 +125,24 @@ fn en_passant(input: &str) -> Option<Vec<String>> {
     }
 }
 
-fn halfmove_clock(input: &str) -> u32 {
+fn halfmove_clock(input: &str) -> u16 {
     let mut halfmove_clock = String::new();
     for c in input.chars() {
         if c.is_ascii_digit() {
             halfmove_clock.push(c);
         }
     }
-    halfmove_clock.parse::<u32>().unwrap()
+    halfmove_clock.parse::<u16>().unwrap()
 }
 
-fn fullmove_count(input: &str) -> u32 {
+fn fullmove_count(input: &str) -> u16 {
     let mut fullmove_clock = String::new();
     for c in input.chars() {
         if c.is_ascii_digit() {
             fullmove_clock.push(c);
         }
     }
-    fullmove_clock.parse::<u32>().unwrap()
+    fullmove_clock.parse::<u16>().unwrap()
 }
 
 // https://github.com/ucarion/fen/blob/master/src/lib.rs#L139-L173

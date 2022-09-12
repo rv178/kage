@@ -32,8 +32,8 @@ pub struct GameStatus {
     pub side_to_move: Colour,
     pub castling_id: [bool; 4],
     pub en_passant: Option<Vec<String>>,
-    pub half_move_clock: u32,
-    pub full_move_count: u32,
+    pub half_move_clock: u16,
+    pub full_move_count: u16,
 }
 
 impl GameStatus {
