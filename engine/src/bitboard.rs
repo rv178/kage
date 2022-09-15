@@ -40,7 +40,9 @@ impl BitPos {
 
 pub fn convert(game_status: GameStatus) {
     let positions: BitPos = BitPos::new(game_status.pieces);
-    println!("{:?}", positions);
+    println!();
+    println!("White pawns: ");
+    positions.wp.print();
 }
 
 impl BitBoard {
@@ -65,20 +67,42 @@ impl BitBoard {
     pub fn is_empty(&self) -> bool {
         self.0 == 0
     }
+    // check if equal
+    pub fn eq(self, other: Self) -> bool {
+        self.0 == other.0
+    }
     // change bitboard value to 0
     pub fn clear() -> Self {
         Self(0)
     }
     // and
-    pub fn bitand(self, other: Self) -> Self {
+    pub fn and(self, other: Self) -> Self {
         Self(self.0 & other.0)
     }
     // or
-    pub fn bitor(self, other: Self) -> Self {
+    pub fn or(self, other: Self) -> Self {
         Self(self.0 | other.0)
     }
     // multiplication
     pub fn mul(self, other: Self) -> Self {
         Self(self.0.wrapping_mul(other.0))
+    }
+    // print bitboard
+    pub fn print(&self) {
+        for rank in 0..8 {
+            print!("{}  ", rank + 1);
+            for file in 0..8 {
+                let square = rank * 8 + file;
+                if self.0 & (1 << square) >= 1 {
+                    print!("1 ");
+                } else {
+                    print!("0 ");
+                }
+            }
+            println!();
+        }
+        println!();
+        println!("   h g f e d c b a");
+        println!();
     }
 }
