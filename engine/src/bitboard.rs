@@ -1,6 +1,7 @@
-use crate::{GameStatus, Piece};
+use crate::{GameStatus, Piece, Square};
+use std::ops::{BitAnd, BitOr, Mul};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct BitBoard(pub u64);
 
 #[derive(Debug, Clone)]
@@ -43,6 +44,9 @@ pub fn convert(game_status: GameStatus) {
     println!();
     println!("White pawns: ");
     positions.wp.print();
+    // example
+    let set: BitBoard = BitBoard(1 << Square::E2 as i32);
+    set.print();
 }
 
 impl BitBoard {
@@ -71,24 +75,13 @@ impl BitBoard {
     pub fn eq(self, other: Self) -> bool {
         self.0 == other.0
     }
-    // change bitboard value to 0
-    pub fn clear() -> Self {
+    // init empty bitboard
+    pub fn empty() -> Self {
         Self(0)
-    }
-    // and
-    pub fn and(self, other: Self) -> Self {
-        Self(self.0 & other.0)
-    }
-    // or
-    pub fn or(self, other: Self) -> Self {
-        Self(self.0 | other.0)
-    }
-    // multiplication
-    pub fn mul(self, other: Self) -> Self {
-        Self(self.0.wrapping_mul(other.0))
     }
     // print bitboard
     pub fn print(&self) {
+        println!("Value: {}", &self.0);
         for rank in 0..8 {
             print!("{}  ", rank + 1);
             for file in 0..8 {
@@ -104,5 +97,29 @@ impl BitBoard {
         println!();
         println!("   h g f e d c b a");
         println!();
+    }
+    pub fn set_bit(self, square: Square) -> Self {
+        Self(self.0 & (1 << square as i32))
+    }
+}
+
+impl BitAnd for BitBoard {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl BitOr for BitBoard {
+    type Output = Self;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self(self.0 | rhs.0)
+    }
+}
+
+impl Mul for BitBoard {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self(self.0.wrapping_mul(rhs.0))
     }
 }
