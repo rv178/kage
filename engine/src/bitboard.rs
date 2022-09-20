@@ -1,7 +1,7 @@
 use crate::{GameStatus, Piece, Square};
 use std::ops::{BitAnd, BitOr, Mul};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BitBoard(pub u64);
 
 #[derive(Debug, Clone)]
@@ -40,13 +40,14 @@ impl BitPos {
 }
 
 pub fn convert(game_status: GameStatus) {
-    let positions: BitPos = BitPos::new(game_status.pieces);
+    let mut positions: BitPos = BitPos::new(game_status.pieces);
     println!();
     println!("White pawns: ");
+    // set H8 to 1
+    positions.wp.set_bit(Square::H8);
+    // toggle A2
+    positions.wp.toggle_bit(Square::A2);
     positions.wp.print();
-    // example
-    let set: BitBoard = BitBoard(1 << Square::E2 as i32);
-    set.print();
 }
 
 impl BitBoard {
@@ -79,6 +80,9 @@ impl BitBoard {
     pub fn empty() -> Self {
         Self(0)
     }
+    pub fn from_sq(square: Square) -> Self {
+        Self(1 << square as u8)
+    }
     // print bitboard
     pub fn print(&self) {
         println!("Value: {}", &self.0);
@@ -98,8 +102,11 @@ impl BitBoard {
         println!("   h g f e d c b a");
         println!();
     }
-    pub fn set_bit(self, square: Square) -> Self {
-        Self(self.0 & (1 << square as i32))
+    pub fn set_bit(&mut self, square: Square) {
+        self.0 |= BitBoard::from_sq(square).0;
+    }
+    pub fn toggle_bit(&mut self, square: Square) {
+        self.0 ^= BitBoard::from_sq(square).0;
     }
 }
 
