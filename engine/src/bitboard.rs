@@ -21,38 +21,48 @@ pub struct BitPos {
 }
 
 impl BitPos {
-    fn new(pieces: [Option<Piece>; 64]) -> BitPos {
+    fn new(pieces: &mut [Option<Piece>; 64]) -> BitPos {
         BitPos {
-            wp: BitBoard::gen(&pieces, 'P'),
-            wn: BitBoard::gen(&pieces, 'N'),
-            wb: BitBoard::gen(&pieces, 'B'),
-            wr: BitBoard::gen(&pieces, 'R'),
-            wq: BitBoard::gen(&pieces, 'Q'),
-            wk: BitBoard::gen(&pieces, 'K'),
-            bp: BitBoard::gen(&pieces, 'p'),
-            bn: BitBoard::gen(&pieces, 'n'),
-            bb: BitBoard::gen(&pieces, 'b'),
-            br: BitBoard::gen(&pieces, 'r'),
-            bq: BitBoard::gen(&pieces, 'q'),
-            bk: BitBoard::gen(&pieces, 'k'),
+            wp: BitBoard::gen(pieces, 'P'),
+            wn: BitBoard::gen(pieces, 'N'),
+            wb: BitBoard::gen(pieces, 'B'),
+            wr: BitBoard::gen(pieces, 'R'),
+            wq: BitBoard::gen(pieces, 'Q'),
+            wk: BitBoard::gen(pieces, 'K'),
+            bp: BitBoard::gen(pieces, 'p'),
+            bn: BitBoard::gen(pieces, 'n'),
+            bb: BitBoard::gen(pieces, 'b'),
+            br: BitBoard::gen(pieces, 'r'),
+            bq: BitBoard::gen(pieces, 'q'),
+            bk: BitBoard::gen(pieces, 'k'),
         }
     }
 }
 
-pub fn convert(game_status: GameStatus) {
-    let mut positions: BitPos = BitPos::new(game_status.pieces);
+/*
+const NOT_A_FILE: BitBoard = BitBoard(18374403900871474942);
+const NOT_H_FILE: BitBoard = BitBoard(9187201950435737471);
+const NOT_HG_FILE: BitBoard = BitBoard(4557430888798830399);
+const NOT_AB_FILE: BitBoard = BitBoard(18229723555195321596);
+*/
+
+pub fn convert(game_status: &mut GameStatus) {
+    let mut positions: BitPos = BitPos::new(&mut game_status.pieces);
     println!();
     println!("White pawns: ");
     // set H8 to 1
-    positions.wp.set_bit(Square::H8);
+    positions.wp.set_bit(Square::H7);
     // toggle A2
     positions.wp.toggle_bit(Square::A2);
     positions.wp.print();
 }
 
 impl BitBoard {
-    pub fn gen(pieces: &[Option<Piece>; 64], compare: char) -> Self {
+    pub fn gen(pieces: &mut [Option<Piece>; 64], compare: char) -> Self {
         let mut bin_str = String::new();
+        // reverse pieces array
+        pieces.reverse();
+
         for piece in pieces {
             if let Some(piece) = piece {
                 if !(piece.symbol == compare) {
@@ -86,8 +96,10 @@ impl BitBoard {
     // print bitboard
     pub fn print(&self) {
         println!("Value: {}", &self.0);
+        let mut x = 8;
         for rank in 0..8 {
-            print!("{}  ", rank + 1);
+            print!("{}  ", x);
+            x -= 1;
             for file in 0..8 {
                 let square = rank * 8 + file;
                 if self.0 & (1 << square) >= 1 {
@@ -99,12 +111,14 @@ impl BitBoard {
             println!();
         }
         println!();
-        println!("   h g f e d c b a");
+        println!("   a b c d e f g h");
         println!();
     }
+    // set bit at given square (0 -> 1)
     pub fn set_bit(&mut self, square: Square) {
         self.0 |= BitBoard::from_sq(square).0;
     }
+    // toggle bit at given square
     pub fn toggle_bit(&mut self, square: Square) {
         self.0 ^= BitBoard::from_sq(square).0;
     }

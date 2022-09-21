@@ -23,10 +23,10 @@ fn main() {
                 if args.len() == 3 {
                     let fen = &args[2];
 
-                    let game_state = parser::return_state(fen);
+                    let mut game_state = parser::return_state(fen);
                     display::print_all(&game_state);
                     println!("Now printing bitboard...");
-                    convert(game_state);
+                    convert(&mut game_state);
                 } else {
                     fen_log!("Error: missing FEN string");
                 }

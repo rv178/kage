@@ -1,4 +1,5 @@
 // work in progress
+//use crate::bitboard::BitBoard;
 
 /*
 enum MoveType {
@@ -14,3 +15,5 @@ enum MoveType {
     QueenProm,      // pawn -> queen
 }
 */
+
+//pub fn gen_pawn_atk(board: BitBoard) {}
