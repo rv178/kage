@@ -68,13 +68,11 @@ trait Rotation {
     fn rot_180(&mut self);
 }
 
-/*
-// flip the bitboard
+// flip methods
 trait Flip {
     fn flip_v(&mut self);
     fn flip_h(&mut self);
 }
-*/
 
 impl BitM for BitBoard {
     // set bit at given square (0 -> 1)
@@ -101,6 +99,24 @@ impl Rotation for BitBoard {
         self.0 = ((self.0 >> 8) & v1.0) | ((self.0 & v1.0) << 8);
         self.0 = ((self.0 >> 16) & v2.0) | ((self.0 & v2.0) << 16);
         self.0 = (self.0 >> 32) | (self.0 << 32);
+    }
+}
+
+impl Flip for BitBoard {
+    fn flip_v(&mut self) {
+        let k1: BitBoard = BitBoard(0x00FF00FF00FF00FF);
+        let k2: BitBoard = BitBoard(0x0000FFFF0000FFFF);
+        self.0 = ((self.0 >> 8) & k1.0) | ((self.0 & k1.0) << 8);
+        self.0 = ((self.0 >> 16) & k2.0) | ((self.0 & k2.0) << 16);
+        self.0 = (self.0 >> 32) | (self.0 << 32);
+    }
+    fn flip_h(&mut self) {
+        let k1: BitBoard = BitBoard(0x5555555555555555);
+        let k2: BitBoard = BitBoard(0x3333333333333333);
+        let k4: BitBoard = BitBoard(0x0f0f0f0f0f0f0f0f);
+        self.0 = ((self.0 >> 1) & k1.0) | ((self.0 & k1.0) << 1);
+        self.0 = ((self.0 >> 2) & k2.0) | ((self.0 & k2.0) << 2);
+        self.0 = ((self.0 >> 4) & k4.0) | ((self.0 & k4.0) << 4);
     }
 }
 
@@ -139,8 +155,8 @@ impl BitBoard {
         self.0 == 0
     }
     // check if equal
-    pub fn eq(&self, other: Self) -> bool {
-        self.0 == other.0
+    pub fn eq(&self, rhs: Self) -> bool {
+        self.0 == rhs.0
     }
     // generate bitboard from piece list
     pub fn gen(pieces: &mut [Option<Piece>; 64], compare: char) -> Self {
