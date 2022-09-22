@@ -5,8 +5,16 @@ Chess engine written in Rust.
 ### Features
 
 -	FEN string parser
-- 	bitboard converter (WIP)
+- 	bitboard representation
 -	nothing else
+
+### Aim
+
+- 	Make a decent (preferrably strong) UCI compatible chess engine
+- 	Negamax search with alpha-beta pruning
+- 	Search with depth
+
+I'm currently reading the [chess programming wiki](https://www.chessprogramming.org/) to learn more about engine development.
 
 ### Compiling
 
