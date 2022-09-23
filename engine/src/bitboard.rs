@@ -1,4 +1,4 @@
-use crate::movegen::{b_pawn_any_attacks, b_pawn_east_attacks, b_pawn_west_attacks};
+use crate::movegen::{bp_all_atk, wp_all_atk};
 use crate::{GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,20 +50,13 @@ const NOT_AB_FILE: BitBoard = BitBoard(18229723555195321596);
 pub fn convert(game_status: &mut GameStatus) {
     let positions: BitPos = BitPos::new(&mut game_status.pieces);
     println!();
-    println!("Black pawn atk (east): ");
-    let east_pawn_atk = b_pawn_east_attacks(positions.bp);
-    east_pawn_atk.print();
-
-    println!("Black pawn atk (west): ");
-    let west_pawn_atk = b_pawn_west_attacks(positions.bp);
-    west_pawn_atk.print();
-
-    println!("Black pawn atk: ");
-    let b_pawn_any_atk = b_pawn_any_attacks(east_pawn_atk, west_pawn_atk);
-    b_pawn_any_atk.print();
 
     println!("Black pawns: ");
     positions.bp.print();
+
+    println!("Black pawn attacks:");
+    let bp_all = bp_all_atk(positions.bp);
+    bp_all.print();
 }
 
 // bit manipulation inside bitboard
