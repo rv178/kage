@@ -1,6 +1,6 @@
 pub mod bitboard;
 pub mod fen;
-//pub mod movegen;
+pub mod movegen;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Piece {

@@ -1,3 +1,4 @@
+use crate::movegen::{b_pawn_any_attacks, b_pawn_east_attacks, b_pawn_west_attacks};
 use crate::{GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -38,22 +39,31 @@ impl BitPos {
     }
 }
 
+pub const UNIVERSAL: BitBoard = BitBoard(18446744073709551615);
+pub const NOT_A_FILE: BitBoard = BitBoard(18374403900871474942);
+pub const NOT_H_FILE: BitBoard = BitBoard(9187201950435737471);
 /*
-const NOT_A_FILE: BitBoard = BitBoard(18374403900871474942);
-const NOT_H_FILE: BitBoard = BitBoard(9187201950435737471);
 const NOT_HG_FILE: BitBoard = BitBoard(4557430888798830399);
 const NOT_AB_FILE: BitBoard = BitBoard(18229723555195321596);
 */
 
 pub fn convert(game_status: &mut GameStatus) {
-    let mut positions: BitPos = BitPos::new(&mut game_status.pieces);
+    let positions: BitPos = BitPos::new(&mut game_status.pieces);
     println!();
-    println!("White pawns: ");
-    // set H8 to 1
-    positions.wp.set_bit(Square::H7);
-    // toggle A2
-    positions.wp.toggle_bit(Square::A2);
-    positions.wp.print();
+    println!("Black pawn atk (east): ");
+    let east_pawn_atk = b_pawn_east_attacks(positions.bp);
+    east_pawn_atk.print();
+
+    println!("Black pawn atk (west): ");
+    let west_pawn_atk = b_pawn_west_attacks(positions.bp);
+    west_pawn_atk.print();
+
+    println!("Black pawn atk: ");
+    let b_pawn_any_atk = b_pawn_any_attacks(east_pawn_atk, west_pawn_atk);
+    b_pawn_any_atk.print();
+
+    println!("Black pawns: ");
+    positions.bp.print();
 }
 
 // bit manipulation inside bitboard
@@ -160,22 +170,23 @@ impl BitBoard {
     // print bitboard
     pub fn print(&self) {
         println!("Value: {}", &self.0);
+        println!();
         let mut x = 8;
         for rank in 0..8 {
-            print!("{}  ", x);
+            print!("\x1b[34m{}\x1b[0m  ", x);
             x -= 1;
             for file in 0..8 {
                 let square = rank * 8 + file;
                 if self.0 & (1 << square) >= 1 {
-                    print!("1 ");
+                    print!("\x1b[1m1\x1b[0m ");
                 } else {
-                    print!("0 ");
+                    print!("\x1b[38;5;8m0\x1b[0m ");
                 }
             }
             println!();
         }
         println!();
-        println!("   a b c d e f g h");
+        println!("\x1b[34m   a b c d e f g h\x1b[0m");
         println!();
     }
 }

@@ -1,19 +1,13 @@
-// work in progress
-//use crate::bitboard::BitBoard;
+use crate::bitboard::{BitBoard, NOT_A_FILE, NOT_H_FILE};
 
-/*
-enum MoveType {
-    Quiet,          // no promotions or captures
-    DoublePawnPush, // initial pawn push, but two times
-    KingCastle,     // castling kingside
-    QueenCastle,    // castling queenside
-    Capture,        // captures
-    EpCapture,      // en passant captures
-    KnightProm,     // pawn -> knight
-    BishopProm,     // pawn -> bishop
-    RookProm,       // pawn -> rook
-    QueenProm,      // pawn -> queen
+pub fn b_pawn_east_attacks(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 << 9) & NOT_A_FILE.0)
 }
-*/
 
-//pub fn gen_pawn_atk(board: BitBoard) {}
+pub fn b_pawn_west_attacks(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 << 7) & NOT_H_FILE.0)
+}
+
+pub fn b_pawn_any_attacks(east: BitBoard, west: BitBoard) -> BitBoard {
+    BitBoard(east.0 | west.0)
+}
