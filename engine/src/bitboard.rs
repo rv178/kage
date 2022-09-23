@@ -1,5 +1,4 @@
 use crate::{GameStatus, Piece, Square};
-use std::ops::{BitAnd, BitOr, Mul};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BitBoard(pub u64);
@@ -120,27 +119,6 @@ impl Flip for BitBoard {
     }
 }
 
-impl BitAnd for BitBoard {
-    type Output = Self;
-    fn bitand(self, rhs: Self) -> Self::Output {
-        Self(self.0 & rhs.0)
-    }
-}
-
-impl BitOr for BitBoard {
-    type Output = Self;
-    fn bitor(self, rhs: Self) -> Self::Output {
-        Self(self.0 | rhs.0)
-    }
-}
-
-impl Mul for BitBoard {
-    type Output = Self;
-    fn mul(self, rhs: Self) -> Self::Output {
-        Self(self.0.wrapping_mul(rhs.0))
-    }
-}
-
 impl BitBoard {
     // generate bitboard from square
     pub fn from_sq(square: Square) -> Self {
@@ -180,7 +158,7 @@ impl BitBoard {
         Self(u64::from_str_radix(&bin_str, 2).unwrap())
     }
     // print bitboard
-    fn print(&self) {
+    pub fn print(&self) {
         println!("Value: {}", &self.0);
         let mut x = 8;
         for rank in 0..8 {
