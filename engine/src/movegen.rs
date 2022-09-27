@@ -100,3 +100,61 @@ pub fn knight_atk_lookup(square: Square) -> BitBoard {
             | west_south.0,
     )
 }
+
+// king attacks
+
+pub fn north_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard(board.0 << 8)
+}
+
+pub fn south_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard(board.0 >> 8)
+}
+
+pub fn east_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 << 1) & NOT_A_FILE.0)
+}
+
+pub fn west_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 >> 1) & NOT_H_FILE.0)
+}
+
+pub fn north_east_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 << 9) & NOT_A_FILE.0)
+}
+
+pub fn north_west_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 << 7) & NOT_H_FILE.0)
+}
+
+pub fn south_east_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 >> 7) & NOT_A_FILE.0)
+}
+
+pub fn south_west_king_atk(board: BitBoard) -> BitBoard {
+    BitBoard((board.0 >> 9) & NOT_H_FILE.0)
+}
+
+pub fn king_atk_lookup(square: Square) -> BitBoard {
+    let board = BitBoard::from_sq(square);
+
+    let north = north_king_atk(board);
+    let south = south_king_atk(board);
+    let east = east_king_atk(board);
+    let west = west_king_atk(board);
+    let north_east = north_east_king_atk(board);
+    let north_west = north_west_king_atk(board);
+    let south_east = south_east_king_atk(board);
+    let south_west = south_west_king_atk(board);
+
+    BitBoard(
+        north.0
+            | south.0
+            | east.0
+            | west.0
+            | north_east.0
+            | north_west.0
+            | south_east.0
+            | south_west.0,
+    )
+}

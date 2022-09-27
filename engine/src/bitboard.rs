@@ -1,4 +1,4 @@
-use crate::movegen::{knight_atk_lookup, pawn_atk_lookup};
+use crate::movegen::{king_atk_lookup, knight_atk_lookup, pawn_atk_lookup};
 use crate::{Colour, GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -60,6 +60,9 @@ pub fn convert(game_status: &mut GameStatus) {
 
     let n = knight_atk_lookup(Square::E4);
     n.print();
+
+    let k = king_atk_lookup(Square::E4);
+    k.print();
 }
 
 impl BitBoard {
