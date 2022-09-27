@@ -57,6 +57,13 @@ pub fn convert(game_status: &mut GameStatus) {
     println!("Black pawn attacks:");
     let bp_all = bp_all_atk(positions.bp);
     bp_all.print();
+
+    println!("White pawns:");
+    positions.wp.print();
+
+    println!("White pawn attacks:");
+    let wp_all = wp_all_atk(positions.wp);
+    wp_all.print();
 }
 
 // bit manipulation inside bitboard
