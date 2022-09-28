@@ -5,8 +5,9 @@ Chess engine written in Rust.
 ### Features
 
 -	FEN string parser
-- 	bitboard representation
--	nothing else
+- 	BitBoard representation
+-	Pre-calculated attack tables
+-	Nothing else (as of now)
 
 ### Aim
 
