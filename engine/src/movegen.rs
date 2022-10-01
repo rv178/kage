@@ -159,27 +159,31 @@ pub fn king_atk_lookup(square: Square) -> BitBoard {
     )
 }
 
-// map relevant bishop occupancy bits
+// generate bishop attacks
 
-pub fn bishop_atk_lookup(square: Square) -> BitBoard {
+pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
     let mut file;
 
-    let tr = square as u8 / 8;
-    let tf = square as u8 % 8;
+    let tr = square as i8 / 8;
+    let tf = square as i8 % 8;
 
     // (1) south east
     for i in 1..7 {
         rank = tr + i;
         file = tf + i;
 
-        if rank <= 6 && file <= 6 {
+        if rank <= 7 && file <= 7 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     // (2) north east
@@ -187,11 +191,15 @@ pub fn bishop_atk_lookup(square: Square) -> BitBoard {
         rank = tr - i;
         file = tf + i;
 
-        if rank >= 1 && file <= 6 {
+        if rank >= 0 && file <= 7 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     // (3) south west
@@ -199,11 +207,15 @@ pub fn bishop_atk_lookup(square: Square) -> BitBoard {
         rank = tr + i;
         file = tf - i;
 
-        if rank <= 6 && file >= 1 {
+        if rank <= 7 && file >= 0 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     // (4) north west
@@ -211,68 +223,88 @@ pub fn bishop_atk_lookup(square: Square) -> BitBoard {
         rank = tr - i;
         file = tf - i;
 
-        if rank >= 1 && file >= 1 {
+        if rank >= 0 && file >= 0 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     atk
 }
 
-// map relevant rook occupancy bits
+// generate rook attacks
 
-pub fn rook_atk_lookup(square: Square) -> BitBoard {
+pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
 
-    let tr = square as u8 / 8;
-    let tf = square as u8 % 8;
+    let tr = square as i8 / 8;
+    let tf = square as i8 % 8;
 
     // (1) north
     for i in 1..7 {
         rank = tr + i;
 
-        if rank <= 6 {
+        if rank <= 7 {
             atk.0 |= 1 << (rank * 8 + tf);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + tf) & block.0 != 0 {
+            break;
+        };
     }
 
     // (2) south
     for i in 1..7 {
         rank = tr - i;
 
-        if rank >= 1 {
+        if rank >= 0 {
             atk.0 |= 1 << (rank * 8 + tf);
         } else {
             break;
         }
+
+        if 1 << (rank * 8 + tf) & block.0 != 0 {
+            break;
+        };
     }
 
     // (3) east
     for i in 1..7 {
         let file = tf + i;
 
-        if file <= 6 {
+        if file <= 7 {
             atk.0 |= 1 << (tr * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (tr * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     // (4) west
     for i in 1..7 {
         let file = tf - i;
 
-        if file >= 1 {
+        if file >= 0 {
             atk.0 |= 1 << (tr * 8 + file);
         } else {
             break;
         }
+
+        if 1 << (tr * 8 + file) & block.0 != 0 {
+            break;
+        };
     }
 
     atk

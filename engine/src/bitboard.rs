@@ -66,10 +66,15 @@ pub fn convert(game_status: &mut GameStatus) {
     let k = king_atk_lookup(Square::E4);
     k.print();
 
-    let b = bishop_atk_lookup(Square::E4);
+    let mut block = BitBoard::empty();
+    block.set_bit(Square::G2);
+    block.set_bit(Square::D5);
+    block.set_bit(Square::E3);
+    block.set_bit(Square::B4);
+    let b = bishop_atk_lookup(Square::E4, block);
     b.print();
 
-    let r = rook_atk_lookup(Square::E4);
+    let r = rook_atk_lookup(Square::E4, block);
     r.print();
 }
 
