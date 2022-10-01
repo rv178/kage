@@ -76,6 +76,9 @@ pub fn convert(game_status: &mut GameStatus) {
 
     let r = rook_atk_lookup(Square::E4, block);
     r.print();
+
+    let c = r.count_bits();
+    println!("Rook attack bit count: {}", c);
 }
 
 impl BitBoard {
@@ -178,5 +181,15 @@ impl BitBoard {
         self.0 = ((self.0 >> 1) & k1.0) | ((self.0 & k1.0) << 1);
         self.0 = ((self.0 >> 2) & k2.0) | ((self.0 & k2.0) << 2);
         self.0 = ((self.0 >> 4) & k4.0) | ((self.0 & k4.0) << 4);
+    }
+    // count bits within the bitboard
+    pub fn count_bits(&self) -> u8 {
+        let mut read_only = self.0;
+        let mut count = 0;
+        while read_only > 0 {
+            count += 1;
+            read_only &= read_only - 1
+        }
+        count
     }
 }
