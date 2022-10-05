@@ -1,7 +1,5 @@
-use crate::movegen::{
-    bishop_atk_lookup, king_atk_lookup, knight_atk_lookup, pawn_atk_lookup, rook_atk_lookup,
-};
-use crate::{Colour, GameStatus, Piece, Square};
+use crate::movegen::*;
+use crate::{GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BitBoard(pub u64);
@@ -57,15 +55,6 @@ pub fn convert(game_status: &mut GameStatus) {
     println!("White pawns:");
     positions.wp.print();
 
-    let p = pawn_atk_lookup(Square::E4, Colour::Black);
-    p.print();
-
-    let n = knight_atk_lookup(Square::E4);
-    n.print();
-
-    let k = king_atk_lookup(Square::E4);
-    k.print();
-
     let mut block = BitBoard::empty();
     block.set_bit(Square::G2);
     block.set_bit(Square::D5);
@@ -76,9 +65,6 @@ pub fn convert(game_status: &mut GameStatus) {
 
     let r = rook_atk_lookup(Square::E4, block);
     r.print();
-
-    let c = r.count_bits();
-    println!("Rook attack bit count: {}", c);
 }
 
 impl BitBoard {
@@ -129,6 +115,8 @@ impl BitBoard {
     }
     // print bitboard
     pub fn print(&self) {
+        println!();
+        println!("Hex: {:x}", self.0);
         println!("Value: {}", &self.0);
         println!();
         let mut x = 8;
@@ -183,13 +171,46 @@ impl BitBoard {
         self.0 = ((self.0 >> 4) & k4.0) | ((self.0 & k4.0) << 4);
     }
     // count bits within the bitboard
-    pub fn count_bits(&self) -> u8 {
-        let mut read_only = self.0;
-        let mut count = 0;
-        while read_only > 0 {
-            count += 1;
-            read_only &= read_only - 1
+    pub fn count_bits(&self) -> u32 {
+        self.0.count_ones()
+    }
+    // funciton to get least significant bit
+    pub fn get_ls1_bit(&self) -> i8 {
+        if self.0 != 0 {
+            let count = BitBoard(self.0 & (self.0 - 1));
+            count.count_bits().try_into().unwrap()
+        } else {
+            -1
         }
-        count
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{bitboard::BitBoard, movegen::*, Colour, Square};
+    #[test]
+    fn check_atk_lookup() {
+        let p = pawn_atk_lookup(Square::E4, Colour::Black);
+        assert_eq!(p.0, 43980465111040);
+
+        let n = knight_atk_lookup(Square::E4);
+        assert_eq!(n.0, 11333767002587136);
+
+        let k = king_atk_lookup(Square::E4);
+        assert_eq!(k.0, 61745389371392);
+
+        let mut block = BitBoard::empty();
+        block.set_bit(Square::G2);
+        block.set_bit(Square::D5);
+        block.set_bit(Square::E3);
+        block.set_bit(Square::B4);
+        let b = bishop_atk_lookup(Square::E4, block);
+        assert_eq!(b.0, 163299467632607232);
+
+        let r = rook_atk_lookup(Square::E4, block);
+        assert_eq!(r.0, 18614657749008);
+
+        assert_eq!(r.count_bits(), 11);
+        assert_eq!(r.get_ls1_bit(), 10);
     }
 }
