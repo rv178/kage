@@ -1,4 +1,5 @@
 use crate::movegen::*;
+use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -57,14 +58,33 @@ pub fn convert(game_status: &mut GameStatus) {
 
     let mut block = BitBoard::empty();
     block.set_bit(Square::G2);
-    block.set_bit(Square::D5);
-    block.set_bit(Square::E3);
-    block.set_bit(Square::B4);
+    block.print();
     let b = bishop_atk_lookup(Square::E4, block);
     b.print();
 
     let r = rook_atk_lookup(Square::E4, block);
     r.print();
+    println!("{}", r.get_ls1b());
+
+    let amask = rook_atk_lookup(Square::B2, block);
+    amask.print();
+}
+
+// set occupancies
+pub fn set_occupancy(index: u32, bits_in_mask: u32, mut attack_mask: BitBoard) -> BitBoard {
+    let mut occupancy = 0;
+
+    for count in 0..bits_in_mask {
+        let sq = match_u32_to_sq(attack_mask.get_ls1b());
+
+        attack_mask.0 |= BitBoard::from_sq(sq).0;
+        attack_mask.pop_bit(sq);
+
+        if index & (1 << count) != 0 {
+            occupancy |= BitBoard::from_sq(sq).0;
+        }
+    }
+    BitBoard(occupancy)
 }
 
 impl BitBoard {
@@ -91,6 +111,20 @@ impl BitBoard {
     // toggle bit at given square
     pub fn toggle_bit(&mut self, square: Square) {
         self.0 ^= BitBoard::from_sq(square).0;
+    }
+    // get bit at given square
+    pub fn get_bit(&self, square: Square) -> bool {
+        self.0 & BitBoard::from_sq(square).0 != 0
+    }
+    // pop bit at given square
+    pub fn pop_bit(&mut self, square: Square) {
+        self.0 &= !BitBoard::from_sq(square).0;
+
+        if self.get_bit(square) {
+            self.0 ^= BitBoard::from_sq(square).0;
+        } else {
+            self.0 = 0;
+        }
     }
     // generate bitboard from piece list
     pub fn gen(pieces: &mut [Option<Piece>; 64], compare: char) -> Self {
@@ -174,13 +208,12 @@ impl BitBoard {
     pub fn count_bits(&self) -> u32 {
         self.0.count_ones()
     }
-    // funciton to get least significant bit
-    pub fn get_ls1_bit(&self) -> i8 {
+    // get least significant bit index
+    pub fn get_ls1b(&self) -> u32 {
         if self.0 != 0 {
-            let count = BitBoard(self.0 & (self.0 - 1));
-            count.count_bits().try_into().unwrap()
+            self.0.trailing_zeros()
         } else {
-            -1
+            0
         }
     }
 }
@@ -211,6 +244,6 @@ mod tests {
         assert_eq!(r.0, 18614657749008);
 
         assert_eq!(r.count_bits(), 11);
-        assert_eq!(r.get_ls1_bit(), 10);
+        assert_eq!(r.get_ls1b(), 4);
     }
 }
