@@ -45,123 +45,114 @@ pub fn pawn_atk_lookup(square: Square, colour: Colour) -> BitBoard {
 
 // knight attacks
 
-pub fn north_east_knight_atk(board: BitBoard) -> BitBoard {
+pub fn no_no_east_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 17) & NOT_A_FILE.0)
 }
 
-pub fn north_west_knight_atk(board: BitBoard) -> BitBoard {
+pub fn no_no_west_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 15) & NOT_H_FILE.0)
 }
 
-pub fn south_east_knight_atk(board: BitBoard) -> BitBoard {
+pub fn so_so_east_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 15) & NOT_A_FILE.0)
 }
 
-pub fn south_west_knight_atk(board: BitBoard) -> BitBoard {
+pub fn so_so_west_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 17) & NOT_H_FILE.0)
 }
 
-pub fn east_north_knight_atk(board: BitBoard) -> BitBoard {
+pub fn no_ea_east_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 10) & NOT_AB_FILE.0)
 }
 
-pub fn east_south_knight_atk(board: BitBoard) -> BitBoard {
+pub fn so_ea_east_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 6) & NOT_AB_FILE.0)
 }
 
-pub fn west_north_knight_atk(board: BitBoard) -> BitBoard {
+pub fn no_we_west_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 6) & NOT_HG_FILE.0)
 }
 
-pub fn west_south_knight_atk(board: BitBoard) -> BitBoard {
+pub fn so_we_west_knight(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 10) & NOT_HG_FILE.0)
 }
 
 pub fn knight_atk_lookup(square: Square) -> BitBoard {
     let board = BitBoard::from_sq(square);
 
-    let north_east = north_east_knight_atk(board);
-    let north_west = north_west_knight_atk(board);
-    let south_east = south_east_knight_atk(board);
-    let south_west = south_west_knight_atk(board);
-    let east_north = east_north_knight_atk(board);
-    let east_south = east_south_knight_atk(board);
-    let west_north = west_north_knight_atk(board);
-    let west_south = west_south_knight_atk(board);
+    let no_no_east = no_no_east_knight(board);
+    let no_no_west = no_no_west_knight(board);
+    let so_so_east = so_so_east_knight(board);
+    let so_so_west = so_so_west_knight(board);
+    let no_ea_east = no_ea_east_knight(board);
+    let so_ea_east = so_ea_east_knight(board);
+    let no_we_west = no_we_west_knight(board);
+    let so_we_west = so_we_west_knight(board);
 
     BitBoard(
-        north_east.0
-            | north_west.0
-            | south_east.0
-            | south_west.0
-            | east_north.0
-            | east_south.0
-            | west_north.0
-            | west_south.0,
+        no_no_east.0
+            | no_no_west.0
+            | so_so_east.0
+            | so_so_west.0
+            | no_ea_east.0
+            | so_ea_east.0
+            | no_we_west.0
+            | so_we_west.0,
     )
 }
 
 // king attacks
 
-pub fn north_king_atk(board: BitBoard) -> BitBoard {
+pub fn no_king(board: BitBoard) -> BitBoard {
     BitBoard(board.0 << 8)
 }
 
-pub fn south_king_atk(board: BitBoard) -> BitBoard {
+pub fn so_king(board: BitBoard) -> BitBoard {
     BitBoard(board.0 >> 8)
 }
 
-pub fn east_king_atk(board: BitBoard) -> BitBoard {
+pub fn ea_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 1) & NOT_A_FILE.0)
 }
 
-pub fn west_king_atk(board: BitBoard) -> BitBoard {
+pub fn we_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 1) & NOT_H_FILE.0)
 }
 
-pub fn north_east_king_atk(board: BitBoard) -> BitBoard {
+pub fn no_ea_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 9) & NOT_A_FILE.0)
 }
 
-pub fn north_west_king_atk(board: BitBoard) -> BitBoard {
+pub fn no_we_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 << 7) & NOT_H_FILE.0)
 }
 
-pub fn south_east_king_atk(board: BitBoard) -> BitBoard {
+pub fn so_ea_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 7) & NOT_A_FILE.0)
 }
 
-pub fn south_west_king_atk(board: BitBoard) -> BitBoard {
+pub fn so_we_king(board: BitBoard) -> BitBoard {
     BitBoard((board.0 >> 9) & NOT_H_FILE.0)
 }
 
 pub fn king_atk_lookup(square: Square) -> BitBoard {
     let board = BitBoard::from_sq(square);
 
-    let north = north_king_atk(board);
-    let south = south_king_atk(board);
-    let east = east_king_atk(board);
-    let west = west_king_atk(board);
-    let north_east = north_east_king_atk(board);
-    let north_west = north_west_king_atk(board);
-    let south_east = south_east_king_atk(board);
-    let south_west = south_west_king_atk(board);
+    let no = no_king(board);
+    let so = so_king(board);
+    let ea = ea_king(board);
+    let we = we_king(board);
+    let no_ea = no_ea_king(board);
+    let no_we = no_we_king(board);
+    let so_ea = so_ea_king(board);
+    let so_we = so_we_king(board);
 
-    BitBoard(
-        north.0
-            | south.0
-            | east.0
-            | west.0
-            | north_east.0
-            | north_west.0
-            | south_east.0
-            | south_west.0,
-    )
+    BitBoard(no.0 | so.0 | ea.0 | we.0 | no_ea.0 | no_we.0 | so_ea.0 | so_we.0)
 }
 
-// generate bishop attacks
+// generate bishop attack mask
 
-pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
+pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
@@ -175,7 +166,7 @@ pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
         rank = tr + i;
         file = tf + i;
 
-        if rank <= 7 && file <= 7 {
+        if rank <= 6 && file <= 6 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
@@ -191,7 +182,7 @@ pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
         rank = tr - i;
         file = tf + i;
 
-        if rank >= 0 && file <= 7 {
+        if rank >= 1 && file <= 6 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
@@ -207,7 +198,7 @@ pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
         rank = tr + i;
         file = tf - i;
 
-        if rank <= 7 && file >= 0 {
+        if rank <= 6 && file >= 1 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
@@ -223,7 +214,7 @@ pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
         rank = tr - i;
         file = tf - i;
 
-        if rank >= 0 && file >= 0 {
+        if rank >= 1 && file >= 1 {
             atk.0 |= 1 << (rank * 8 + file);
         } else {
             break;
@@ -237,9 +228,9 @@ pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     atk
 }
 
-// generate rook attacks
+// generate rook attack mask
 
-pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
+pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
@@ -251,7 +242,7 @@ pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     for i in 1..7 {
         rank = tr + i;
 
-        if rank <= 7 {
+        if rank <= 6 {
             atk.0 |= 1 << (rank * 8 + tf);
         } else {
             break;
@@ -266,7 +257,7 @@ pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     for i in 1..7 {
         rank = tr - i;
 
-        if rank >= 0 {
+        if rank >= 1 {
             atk.0 |= 1 << (rank * 8 + tf);
         } else {
             break;
@@ -281,7 +272,7 @@ pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     for i in 1..7 {
         let file = tf + i;
 
-        if file <= 7 {
+        if file <= 6 {
             atk.0 |= 1 << (tr * 8 + file);
         } else {
             break;
@@ -296,7 +287,7 @@ pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
     for i in 1..7 {
         let file = tf - i;
 
-        if file >= 0 {
+        if file >= 1 {
             atk.0 |= 1 << (tr * 8 + file);
         } else {
             break;
