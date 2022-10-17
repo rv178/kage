@@ -1,4 +1,4 @@
-use crate::Square;
+use crate::*;
 
 pub fn match_u32_to_sq(sq: u32) -> Square {
     match sq {

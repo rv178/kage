@@ -151,8 +151,7 @@ pub fn king_atk_lookup(square: Square) -> BitBoard {
 }
 
 // generate bishop attack mask
-
-pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
+pub fn bishop_atk_mask(square: Square) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
@@ -171,10 +170,6 @@ pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     // (2) north east
@@ -187,10 +182,6 @@ pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     // (3) south west
@@ -203,10 +194,6 @@ pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     // (4) north west
@@ -219,10 +206,6 @@ pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     atk
@@ -230,7 +213,7 @@ pub fn bishop_atk_mask(square: Square, block: BitBoard) -> BitBoard {
 
 // generate rook attack mask
 
-pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
+pub fn rook_atk_mask(square: Square) -> BitBoard {
     let mut atk = BitBoard::empty();
 
     let mut rank;
@@ -247,10 +230,6 @@ pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + tf) & block.0 != 0 {
-            break;
-        };
     }
 
     // (2) south
@@ -262,10 +241,6 @@ pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (rank * 8 + tf) & block.0 != 0 {
-            break;
-        };
     }
 
     // (3) east
@@ -277,10 +252,6 @@ pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (tr * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     // (4) west
@@ -292,11 +263,158 @@ pub fn rook_atk_mask(square: Square, block: BitBoard) -> BitBoard {
         } else {
             break;
         }
-
-        if 1 << (tr * 8 + file) & block.0 != 0 {
-            break;
-        };
     }
 
     atk
 }
+
+// lookup bishop attacks
+
+//pub fn bishop_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
+//let mut atk = BitBoard::empty();
+
+//let mut rank;
+//let mut file;
+
+//let tr = square as i8 / 8;
+//let tf = square as i8 % 8;
+
+//// (1) south east
+//for i in 1..7 {
+//rank = tr + i;
+//file = tf + i;
+
+//if rank <= 7 && file <= 7 {
+//atk.0 |= 1 << (rank * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (2) north east
+//for i in 1..7 {
+//rank = tr - i;
+//file = tf + i;
+
+//if rank >= 0 && file <= 7 {
+//atk.0 |= 1 << (rank * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (3) south west
+//for i in 1..7 {
+//rank = tr + i;
+//file = tf - i;
+
+//if rank <= 7 && file >= 0 {
+//atk.0 |= 1 << (rank * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (4) north west
+//for i in 1..7 {
+//rank = tr - i;
+//file = tf - i;
+
+//if rank >= 0 && file >= 0 {
+//atk.0 |= 1 << (rank * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//atk
+//}
+
+//// lookup rook attacks
+
+//pub fn rook_atk_lookup(square: Square, block: BitBoard) -> BitBoard {
+//let mut atk = BitBoard::empty();
+
+//let mut rank;
+
+//let tr = square as i8 / 8;
+//let tf = square as i8 % 8;
+
+//// (1) north
+//for i in 1..7 {
+//rank = tr + i;
+
+//if rank <= 7 {
+//atk.0 |= 1 << (rank * 8 + tf);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + tf) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (2) south
+//for i in 1..7 {
+//rank = tr - i;
+
+//if rank >= 0 {
+//atk.0 |= 1 << (rank * 8 + tf);
+//} else {
+//break;
+//}
+
+//if 1 << (rank * 8 + tf) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (3) east
+//for i in 1..7 {
+//let file = tf + i;
+
+//if file <= 7 {
+//atk.0 |= 1 << (tr * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (tr * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//// (4) west
+//for i in 1..7 {
+//let file = tf - i;
+
+//if file >= 0 {
+//atk.0 |= 1 << (tr * 8 + file);
+//} else {
+//break;
+//}
+
+//if 1 << (tr * 8 + file) & block.0 != 0 {
+//break;
+//};
+//}
+
+//atk
+//}

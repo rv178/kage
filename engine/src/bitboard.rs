@@ -1,3 +1,4 @@
+use crate::hyperbola::*;
 use crate::movegen::*;
 use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
@@ -47,18 +48,40 @@ pub const NOT_HG_FILE: BitBoard = BitBoard(4557430888798830399);
 pub const NOT_AB_FILE: BitBoard = BitBoard(18229723555195321596);
 pub const EMPTY: BitBoard = BitBoard(0);
 
-// relevant bishop occupancy bit count for each square
-pub const BISHOP_RELEVANT_BITS: [u8; 64] = [
-    6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
-    5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
+pub const RANKS: [BitBoard; 8] = [
+    BitBoard(255),                  // 8th rank
+    BitBoard(65280),                // 7th rank
+    BitBoard(16711680),             // 6th rank
+    BitBoard(4278190080),           // 5th rank
+    BitBoard(1095216660480),        // 4th rank
+    BitBoard(280375465082880),      // 3rd rank
+    BitBoard(71776119061217280),    // 2nd rank
+    BitBoard(18374686479671623680), // 1st rank
 ];
 
-// relevant rook occupancy bit count for each square
-pub const ROOK_RELEVANT_BITS: [u8; 64] = [
-    12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
+pub const FILES: [BitBoard; 8] = [
+    BitBoard(72340172838076673),   // a file
+    BitBoard(144680345676153346),  // b file
+    BitBoard(289360691352306692),  // c file
+    BitBoard(578721382704613384),  // d file
+    BitBoard(1157442765409226768), // e file
+    BitBoard(2314885530818453536), // f file
+    BitBoard(4629771061636907072), // g file
+    BitBoard(9259542123273814144), // h file
 ];
+
+// relevant bishop occupancy bit count for each square
+//pub const BISHOP_RELEVANT_BITS: [u8; 64] = [
+//6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
+//5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
+//];
+
+// relevant rook occupancy bit count for each square
+//pub const ROOK_RELEVANT_BITS: [u8; 64] = [
+//12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
+//11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
+//11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
+//];
 
 // convert piece list to bitboard
 pub fn convert(game_status: &mut GameStatus) {
@@ -74,44 +97,19 @@ pub fn convert(game_status: &mut GameStatus) {
     let mut block = BitBoard::empty();
     block.set_bit(Square::F4);
     block.print();
-    let b = bishop_atk_mask(Square::E4, block);
+    let b = bishop_atk_mask(Square::E4);
     b.print();
 
-    let r = rook_atk_mask(Square::E4, block);
+    let r = rook_atk_mask(Square::E4);
     r.print();
 
     for rank in 0..8 {
         for file in 0..8 {
             let square = rank * 8 + file;
-            print!("{}, ", bishop_atk_mask(match_u32_to_sq(square), EMPTY).count_bits());
+            rook_atk(match_u32_to_sq(square), BitBoard::empty()).print();
         }
         println!();
     }
-
-    for rank in 0..8 {
-        for file in 0..8 {
-            let square = rank * 8 + file;
-            print!("{}, ", rook_atk_mask(match_u32_to_sq(square), EMPTY).count_bits());
-        }
-        println!();
-    }
-}
-
-// set occupancies
-pub fn set_occupancy(index: u32, bits_in_mask: u32, mut attack_mask: BitBoard) -> BitBoard {
-    let mut occupancy = 0;
-
-    for count in 0..bits_in_mask {
-        let sq = match_u32_to_sq(attack_mask.get_ls1b());
-
-        attack_mask.0 |= BitBoard::from_sq(sq).0;
-        attack_mask.pop_bit(sq);
-
-        if index & (1 << count) != 0 {
-            occupancy |= BitBoard::from_sq(sq).0;
-        }
-    }
-    BitBoard(occupancy)
 }
 
 impl BitBoard {
@@ -172,6 +170,10 @@ impl BitBoard {
         }
 
         // convert binary string to decimal (u64)
+        Self(u64::from_str_radix(&bin_str, 2).unwrap())
+    }
+    // from string
+    pub fn from_str(bin_str: String) -> Self {
         Self(u64::from_str_radix(&bin_str, 2).unwrap())
     }
     // print bitboard
@@ -264,10 +266,10 @@ mod tests {
         block.set_bit(Square::D5);
         block.set_bit(Square::E3);
         block.set_bit(Square::B4);
-        let b = bishop_atk_mask(Square::E4, block);
+        let b = bishop_atk_mask(Square::E4);
         assert_eq!(b.0, 163299467632607232);
 
-        let r = rook_atk_mask(Square::E4, block);
+        let r = rook_atk_mask(Square::E4);
         assert_eq!(r.0, 18614657749008);
 
         assert_eq!(r.count_bits(), 11);
