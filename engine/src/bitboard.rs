@@ -1,4 +1,3 @@
-use crate::hyperbola::*;
 use crate::movegen::*;
 use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
@@ -96,17 +95,17 @@ pub fn convert(game_status: &mut GameStatus) {
 
     let mut block = BitBoard::empty();
     block.set_bit(Square::F4);
-    block.print();
-    let b = bishop_atk_mask(Square::E4);
+
+    let b = crate::movegen::sliding::bishop_atk_mask(Square::E4);
     b.print();
 
-    let r = rook_atk_mask(Square::E4);
+    let r = crate::movegen::sliding::rook_atk_mask(Square::E4);
     r.print();
 
     for rank in 0..8 {
         for file in 0..8 {
             let square = rank * 8 + file;
-            rook_atk(match_u32_to_sq(square), BitBoard::empty()).print();
+            rook(match_u32_to_sq(square), BitBoard::empty()).print();
         }
         println!();
     }
@@ -252,13 +251,16 @@ mod tests {
     use crate::{bitboard::BitBoard, movegen::*, Colour, Square};
     #[test]
     fn check_atk_lookup() {
-        let p = pawn_atk_lookup(Square::E4, Colour::Black);
+        let p = pawn::lookup(Square::E4, Colour::Black);
+        p.print();
         assert_eq!(p.0, 43980465111040);
 
-        let n = knight_atk_lookup(Square::E4);
+        let n = knight(Square::E4);
+        n.print();
         assert_eq!(n.0, 11333767002587136);
 
-        let k = king_atk_lookup(Square::E4);
+        let k = king(Square::E4);
+        k.print();
         assert_eq!(k.0, 61745389371392);
 
         let mut block = BitBoard::empty();
@@ -266,13 +268,14 @@ mod tests {
         block.set_bit(Square::D5);
         block.set_bit(Square::E3);
         block.set_bit(Square::B4);
-        let b = bishop_atk_mask(Square::E4);
-        assert_eq!(b.0, 163299467632607232);
+        let b = crate::movegen::sliding::bishop_atk_mask(Square::E4);
+        b.print();
+        assert_eq!(b.0, 19184279556981248);
 
-        let r = rook_atk_mask(Square::E4);
+        let r = rook(Square::E4, block);
+        r.print();
         assert_eq!(r.0, 18614657749008);
 
         assert_eq!(r.count_bits(), 11);
-        assert_eq!(r.get_ls1b(), 4);
     }
 }

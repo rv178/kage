@@ -1,6 +1,5 @@
 pub mod bitboard;
 pub mod fen;
-pub mod hyperbola;
 pub mod movegen;
 pub mod utils;
 
