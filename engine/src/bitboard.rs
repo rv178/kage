@@ -1,5 +1,5 @@
 use crate::movegen::*;
-use crate::utils::match_u32_to_sq;
+//use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -69,6 +69,44 @@ pub const FILES: [BitBoard; 8] = [
     BitBoard(9259542123273814144), // h file
 ];
 
+// diagonal masks
+pub const DIAG: [BitBoard; 15] = [
+    BitBoard(0x80),
+    BitBoard(0x8040),
+    BitBoard(0x804020),
+    BitBoard(0x80402010),
+    BitBoard(0x8040201008),
+    BitBoard(0x804020100804),
+    BitBoard(0x80402010080402),
+    BitBoard(0x8040201008040201),
+    BitBoard(0x4020100804020100),
+    BitBoard(0x2010080402010000),
+    BitBoard(0x1008040201000000),
+    BitBoard(0x804020100000000),
+    BitBoard(0x402010000000000),
+    BitBoard(0x201000000000000),
+    BitBoard(0x100000000000000),
+];
+
+// anti-diagonal masks
+pub const ANTI_DIAG: [BitBoard; 15] = [
+    BitBoard(0x1),
+    BitBoard(0x102),
+    BitBoard(0x10204),
+    BitBoard(0x1020408),
+    BitBoard(0x102040810),
+    BitBoard(0x10204081020),
+    BitBoard(0x1020408102040),
+    BitBoard(0x102040810204080),
+    BitBoard(0x204081020408000),
+    BitBoard(0x408102040800000),
+    BitBoard(0x810204080000000),
+    BitBoard(0x1020408000000000),
+    BitBoard(0x2040800000000000),
+    BitBoard(0x4080000000000000),
+    BitBoard(0x8000000000000000),
+];
+
 // relevant bishop occupancy bit count for each square
 //pub const BISHOP_RELEVANT_BITS: [u8; 64] = [
 //6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
@@ -94,21 +132,16 @@ pub fn convert(game_status: &mut GameStatus) {
     positions.wp.print();
 
     let mut block = BitBoard::empty();
-    block.set_bit(Square::F4);
+    block.set_bit(Square::C6);
+    block.set_bit(Square::E6);
+    block.set_bit(Square::G6);
+    block.set_bit(Square::G4);
+    block.set_bit(Square::G2);
+    block.set_bit(Square::E2);
+    block.set_bit(Square::D4);
+    block.print();
 
-    let b = crate::movegen::sliding::bishop_atk_mask(Square::E4);
-    b.print();
-
-    let r = crate::movegen::sliding::rook_atk_mask(Square::E4);
-    r.print();
-
-    for rank in 0..8 {
-        for file in 0..8 {
-            let square = rank * 8 + file;
-            rook(match_u32_to_sq(square), BitBoard::empty()).print();
-        }
-        println!();
-    }
+    queen(Square::E4, block).print();
 }
 
 impl BitBoard {
@@ -268,9 +301,6 @@ mod tests {
         block.set_bit(Square::D5);
         block.set_bit(Square::E3);
         block.set_bit(Square::B4);
-        let b = crate::movegen::sliding::bishop_atk_mask(Square::E4);
-        b.print();
-        assert_eq!(b.0, 19184279556981248);
 
         let r = rook(Square::E4, block);
         r.print();

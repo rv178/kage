@@ -6,14 +6,13 @@ Chess engine written in Rust.
 
 -	FEN string parser
 - 	BitBoard representation
--	Pre-calculated attack tables
+-   Attack generation for pawns, knights and the king
+-   Sliding piece attack generation with hyperbola quintessence
 -	Nothing else (as of now)
 
 ### Aim
 
 - 	Make a decent (preferrably strong) UCI compatible chess engine
-- 	Negamax search with alpha-beta pruning
-- 	Search with depth
 
 I'm currently reading the [chess programming wiki](https://www.chessprogramming.org/) to learn more about engine development.
 

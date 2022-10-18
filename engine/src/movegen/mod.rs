@@ -4,10 +4,9 @@ use crate::*;
 pub mod king;
 pub mod knight;
 pub mod pawn;
-pub mod sliding;
 
 // hyperbola quintessence
-pub fn hyperbola(sq: Square, occ: BitBoard, mask: u64) -> BitBoard {
+pub fn hyp_quint(sq: Square, occ: BitBoard, mask: u64) -> BitBoard {
     let mut forward = occ.0 & mask;
     let mut reverse = forward.reverse_bits();
 
@@ -17,30 +16,34 @@ pub fn hyperbola(sq: Square, occ: BitBoard, mask: u64) -> BitBoard {
     forward &= mask;
 
     BitBoard(forward)
-
-    //let r = BitBoard::from_sq(sq).0;
-    //let r_dash = r.reverse_bits();
-    //let o = occ.0 & mask;
-    //let o_dash = o.reverse_bits();
-
-    //let left = o ^ (o - 2 * r);
-    //let right = o ^ (o_dash - 2 * r_dash).reverse_bits();
-    // (((o&m) - 2*r) ^ ((o&m)`-2*r`)`) & m
-    //let line_atk = ((o - 2 * r) ^ (o_dash - 2 * r_dash).reverse_bits()) & mask;
-    //BitBoard(line_atk)
 }
 
 pub fn rook(sq: Square, occ: BitBoard) -> BitBoard {
     let tr = sq as usize / 8;
     let tf = sq as usize % 8;
 
-    println!("tr: {}, tf: {}", tr, tf);
-
-    BitBoard(hyperbola(sq, occ, FILES[tf].0).0 | hyperbola(sq, occ, RANKS[tr].0).0)
+    BitBoard(hyp_quint(sq, occ, FILES[tf].0).0 | hyp_quint(sq, occ, RANKS[tr].0).0)
 }
 
-pub fn knight(square: Square) -> BitBoard {
-    let board = BitBoard::from_sq(square);
+pub fn bishop(sq: Square, occ: BitBoard) -> BitBoard {
+    let tr = sq as usize / 8;
+    let tf = sq as usize % 8;
+
+    let diag_index: usize = 7 + tr - tf;
+    let anti_diag_index: usize = tr + tf;
+
+    BitBoard(
+        hyp_quint(sq, occ, DIAG[diag_index].0).0
+            | hyp_quint(sq, occ, ANTI_DIAG[anti_diag_index].0).0,
+    )
+}
+
+pub fn queen(sq: Square, occ: BitBoard) -> BitBoard {
+    BitBoard(rook(sq, occ).0 | bishop(sq, occ).0)
+}
+
+pub fn knight(sq: Square) -> BitBoard {
+    let board = BitBoard::from_sq(sq);
 
     let no_no_east = knight::no_no_east(board);
     let no_no_west = knight::no_no_west(board);
@@ -63,8 +66,8 @@ pub fn knight(square: Square) -> BitBoard {
     )
 }
 
-pub fn king(square: Square) -> BitBoard {
-    let board = BitBoard::from_sq(square);
+pub fn king(sq: Square) -> BitBoard {
+    let board = BitBoard::from_sq(sq);
 
     let no = king::no(board);
     let so = king::so(board);
