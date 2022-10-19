@@ -1,5 +1,25 @@
 use crate::*;
 
+pub fn get_material_count(game_status: &GameStatus, colour: Colour) -> u16 {
+    let mut total_material: u16 = 0;
+
+    for piece in game_status.pieces {
+        if let Some(piece) = piece {
+            if piece.colour == colour {
+                match piece.kind {
+                    Kind::Pawn => total_material += 1,
+                    Kind::Knight => total_material += 3,
+                    Kind::Bishop => total_material += 3,
+                    Kind::Rook => total_material += 5,
+                    Kind::Queen => total_material += 9,
+                    Kind::King => total_material += 0,
+                }
+            }
+        }
+    }
+    total_material
+}
+
 pub fn match_u32_to_sq(sq: u32) -> Square {
     match sq {
         0 => Square::A8,

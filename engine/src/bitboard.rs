@@ -1,4 +1,5 @@
-use crate::movegen::*;
+use crate::{movegen::*, Colour};
+use std::process::exit;
 //use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
 
@@ -19,25 +20,6 @@ pub struct BitPos {
     pub br: BitBoard, // black rooks
     pub bq: BitBoard, // black queen
     pub bk: BitBoard, // black king
-}
-
-impl BitPos {
-    fn new(pieces: &mut [Option<Piece>; 64]) -> BitPos {
-        BitPos {
-            wp: BitBoard::gen(pieces, 'P'),
-            wn: BitBoard::gen(pieces, 'N'),
-            wb: BitBoard::gen(pieces, 'B'),
-            wr: BitBoard::gen(pieces, 'R'),
-            wq: BitBoard::gen(pieces, 'Q'),
-            wk: BitBoard::gen(pieces, 'K'),
-            bp: BitBoard::gen(pieces, 'p'),
-            bn: BitBoard::gen(pieces, 'n'),
-            bb: BitBoard::gen(pieces, 'b'),
-            br: BitBoard::gen(pieces, 'r'),
-            bq: BitBoard::gen(pieces, 'q'),
-            bk: BitBoard::gen(pieces, 'k'),
-        }
-    }
 }
 
 pub const UNIVERSAL: BitBoard = BitBoard(18446744073709551615);
@@ -122,14 +104,14 @@ pub const ANTI_DIAG: [BitBoard; 15] = [
 
 // convert piece list to bitboard
 pub fn convert(game_status: &mut GameStatus) {
-    let positions: BitPos = BitPos::new(&mut game_status.pieces);
+    let pos: BitPos = BitPos::new(&mut game_status.pieces);
     println!();
 
     println!("Black pawns: ");
-    positions.bp.print();
+    pos.bp.print();
 
     println!("White pawns:");
-    positions.wp.print();
+    pos.wp.print();
 
     let mut block = BitBoard::empty();
     block.set_bit(Square::C6);
@@ -142,6 +124,25 @@ pub fn convert(game_status: &mut GameStatus) {
     block.print();
 
     queen(Square::E4, block).print();
+}
+
+impl BitPos {
+    fn new(pieces: &mut [Option<Piece>; 64]) -> BitPos {
+        BitPos {
+            wp: BitBoard::gen(pieces, 'P'),
+            wn: BitBoard::gen(pieces, 'N'),
+            wb: BitBoard::gen(pieces, 'B'),
+            wr: BitBoard::gen(pieces, 'R'),
+            wq: BitBoard::gen(pieces, 'Q'),
+            wk: BitBoard::gen(pieces, 'K'),
+            bp: BitBoard::gen(pieces, 'p'),
+            bn: BitBoard::gen(pieces, 'n'),
+            bb: BitBoard::gen(pieces, 'b'),
+            br: BitBoard::gen(pieces, 'r'),
+            bq: BitBoard::gen(pieces, 'q'),
+            bk: BitBoard::gen(pieces, 'k'),
+        }
+    }
 }
 
 impl BitBoard {
@@ -195,6 +196,40 @@ impl BitBoard {
                     bin_str.push('0');
                 } else {
                     bin_str.push('1');
+                }
+            } else {
+                bin_str.push('0');
+            }
+        }
+
+        // convert binary string to decimal (u64)
+        Self(u64::from_str_radix(&bin_str, 2).unwrap())
+    }
+
+    // generate bitboard of all pieces of one colour from piece list
+    pub fn gen_colour(pieces: &mut [Option<Piece>; 64], colour: Colour) -> Self {
+        let mut bin_str = String::new();
+        // reverse pieces array
+        //pieces.reverse();
+
+        for piece in pieces {
+            if let Some(piece) = piece {
+                match colour {
+                    Colour::White => {
+                        if !(piece.symbol.is_lowercase()) {
+                            bin_str.push('0');
+                        } else {
+                            bin_str.push('1');
+                        }
+                    }
+                    Colour::Black => {
+                        if !(piece.symbol.is_uppercase()) {
+                            bin_str.push('0');
+                        } else {
+                            bin_str.push('1');
+                        }
+                    }
+                    Colour::Undefined => exit(1),
                 }
             } else {
                 bin_str.push('0');

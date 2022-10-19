@@ -1,6 +1,5 @@
 use engine::bitboard::convert;
-use engine::fen;
-use engine::{fen::display, fen::parser, fen_log};
+use engine::{fen, fen_log};
 use std::env;
 use std::process::exit;
 
@@ -23,8 +22,8 @@ fn main() {
                 if args.len() == 3 {
                     let fen = &args[2];
 
-                    let mut game_state = parser::return_state(fen);
-                    display::print_all(&game_state);
+                    let mut game_state = fen::return_state(fen);
+                    fen::print_all(&game_state);
                     println!("Now printing bitboard...");
                     convert(&mut game_state);
                 } else {
@@ -32,7 +31,7 @@ fn main() {
                 }
             }
             "-d" | "--default" => {
-                display::print_all(&fen::default());
+                fen::print_all(&fen::default());
             }
             _ => {
                 main_log!("Invalid option '{}'.", args[1]);

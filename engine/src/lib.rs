@@ -32,7 +32,7 @@ pub struct GameStatus {
     pub pieces: [Option<Piece>; 64],
     pub side_to_move: Colour,
     pub castling_id: [bool; 4],
-    pub en_passant: Option<Vec<String>>,
+    pub en_passant: Option<Vec<Square>>,
     pub half_move_clock: u16,
     pub full_move_count: u16,
 }
