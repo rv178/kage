@@ -230,51 +230,32 @@ fn pieces(input: &str) -> [Option<Piece>; 64] {
 
 // display the board
 pub fn print_board(game_state: &GameStatus) {
-    let mut symbol_vec: Vec<char> = Vec::new();
+    let mut board: Vec<char> = Vec::new();
 
-    for i in 0..game_state.pieces.len() {
-        if game_state.pieces[i] == None {
-            symbol_vec.push(' ');
+    for piece in game_state.pieces {
+        if piece == None {
+            board.push(' ');
         } else {
-            symbol_vec.push(game_state.pieces[i].as_ref().unwrap().symbol);
+            board.push(piece.as_ref().unwrap().symbol);
         }
     }
 
-    fn vec_to_2d_vec(vec: Vec<char>) -> Vec<Vec<char>> {
-        let mut vec_2d: Vec<Vec<char>> = Vec::new();
-        let mut vec_1d: Vec<char> = Vec::new();
-        for item in vec {
-            vec_1d.push(item);
-            if vec_1d.len() == 8 {
-                vec_2d.push(vec_1d);
-                vec_1d = Vec::new();
+    let mut x = 8;
+    println!("+---+---+---+---+---+---+---+---+");
+    for rank in 0..8 {
+        x -= 1;
+        for file in 0..8 {
+            let square = rank * 8 + file;
+            if board[square] == ' ' {
+                print!("|   ");
+            } else {
+                print!("| {} ", board[square]);
             }
         }
-        vec_2d
-    }
-
-    let board = vec_to_2d_vec(symbol_vec);
-
-    fn print_board_vec(array: &[Vec<char>]) -> String {
-        let mut x = 9;
+        print!("| {} \n", x + 1);
         println!("+---+---+---+---+---+---+---+---+");
-        let mut buf = String::new();
-        for (_y, row) in array.iter().enumerate() {
-            for (_x, col) in row.iter().enumerate() {
-                let p_info = format!("| {} ", col);
-                buf.push_str(&p_info);
-            }
-            x -= 1;
-
-            let ranks = format!("| {} \n", x);
-            buf.push_str(&ranks);
-
-            buf.push_str("+---+---+---+---+---+---+---+---+\n");
-        }
-        buf
     }
 
-    print!("{}", print_board_vec(&board));
     println!("  a   b   c   d   e   f   g   h  \n");
 }
 
