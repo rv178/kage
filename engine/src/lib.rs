@@ -1,3 +1,5 @@
+use crate::bitboard::*;
+
 pub mod bitboard;
 pub mod fen;
 pub mod movegen;
@@ -84,4 +86,13 @@ pub enum Square {
     A3, B3, C3, D3, E3, F3, G3, H3,
     A2, B2, C2, D2, E2, F2, G2, H2,
     A1, B1, C1, D1, E1, F1, G1, H1,
+}
+
+pub fn init() {
+    let mut game_state = fen::return_state(fen::TRICKY_POS);
+    fen::print_all(&game_state);
+    println!();
+    let pos = convert(&mut game_state);
+    let pieces = from_bitpos(&pos);
+    print_bb_pieces(pieces, true);
 }

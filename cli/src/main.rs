@@ -1,4 +1,5 @@
-use engine::bitboard::convert;
+use engine::bitboard::*;
+use engine::*;
 use engine::{fen, fen_log};
 use std::env;
 use std::process::exit;
@@ -24,8 +25,11 @@ fn main() {
 
                     let mut game_state = fen::return_state(fen);
                     fen::print_all(&game_state);
-                    println!("Now printing bitboard...");
-                    convert(&mut game_state);
+                    println!();
+                    let pos = convert(&mut game_state);
+
+                    let pieces = from_bitpos(&pos);
+                    print_bb_pieces(pieces, true);
                 } else {
                     fen_log!("Error: missing FEN string");
                 }
@@ -39,7 +43,7 @@ fn main() {
             }
         }
     } else if args.len() == 1 {
-        println!("\x1b[32m\x1b[1mCranium \x1b[0m {}", env!("CARGO_PKG_VERSION"));
+        init();
     }
 }
 

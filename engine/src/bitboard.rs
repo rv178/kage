@@ -1,7 +1,6 @@
-use crate::{movegen::*, utils::match_u32_to_sq, Colour};
-use std::process::exit;
-//use crate::utils::match_u32_to_sq;
+use crate::{utils::match_u32_to_sq, Colour};
 use crate::{GameStatus, Piece, Square};
+use std::process::exit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BitBoard(pub u64);
@@ -92,47 +91,14 @@ pub const ANTI_DIAG: [BitBoard; 15] = [
 const UNICODE_PIECES: [&str; 12] = ["♙", "♘", "♗", "♖", "♕", "♔", "♟", "♞", "♝", "♜", "♛", "♚"];
 const ASCII_PIECES: [&str; 12] = ["p", "n", "b", "r", "q", "k", "P", "N", "B", "R", "Q", "K"];
 
-// relevant bishop occupancy bit count for each square
-//pub const BISHOP_RELEVANT_BITS: [u8; 64] = [
-//6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
-//5, 5, 7, 9, 9, 7, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 6,
-//];
-
-// relevant rook occupancy bit count for each square
-//pub const ROOK_RELEVANT_BITS: [u8; 64] = [
-//12, 11, 11, 11, 11, 11, 11, 12, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-//11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10, 10, 11,
-//11, 10, 10, 10, 10, 10, 10, 11, 12, 11, 11, 11, 11, 11, 11, 12,
-//];
-
 // convert piece list to bitboard
-pub fn convert(game_status: &mut GameStatus) {
+pub fn convert(game_status: &mut GameStatus) -> BitPos {
     let pos: BitPos = BitPos::new(&mut game_status.pieces);
-    println!();
-
-    println!("Black pawns: ");
-    pos.bp.print();
-
-    println!("White pawns:");
-    pos.wp.print();
-
-    let mut block = BitBoard::empty();
-    block.set_bit(Square::C6);
-    block.set_bit(Square::E6);
-    block.set_bit(Square::G6);
-    block.set_bit(Square::G4);
-    block.set_bit(Square::G2);
-    block.set_bit(Square::E2);
-    block.set_bit(Square::D4);
-
-    queen(Square::E4, block).print();
-
-    let pieces = from_bitpos(pos);
-    print_board(pieces, true);
+    pos
 }
 
 // return a bitboard array with all the piece bitboards
-pub fn from_bitpos(pos: BitPos) -> [BitBoard; 12] {
+pub fn from_bitpos(pos: &BitPos) -> [BitBoard; 12] {
     let pieces: [BitBoard; 12] = [
         pos.bp, pos.bn, pos.bb, pos.br, pos.bq, pos.bk, pos.wp, pos.wn, pos.wb, pos.wr, pos.wq,
         pos.wk,
@@ -141,7 +107,7 @@ pub fn from_bitpos(pos: BitPos) -> [BitBoard; 12] {
 }
 
 // print chess board from array of bitboards
-pub fn print_board(pieces: [BitBoard; 12], unicode: bool) {
+pub fn print_bb_pieces(pieces: [BitBoard; 12], unicode: bool) {
     let mut x = 8;
     for rank in 0..8 {
         x -= 1;
@@ -164,7 +130,7 @@ pub fn print_board(pieces: [BitBoard; 12], unicode: bool) {
                     print!("{} ", ASCII_PIECES[piece as usize]);
                 }
             } else {
-                print!(". ");
+                print!("\x1b[38;5;8m.\x1b[0m ");
             }
         }
         println!();
