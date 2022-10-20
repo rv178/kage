@@ -1,4 +1,4 @@
-use crate::{movegen::*, Colour};
+use crate::{movegen::*, utils::match_u32_to_sq, Colour};
 use std::process::exit;
 //use crate::utils::match_u32_to_sq;
 use crate::{GameStatus, Piece, Square};
@@ -89,6 +89,9 @@ pub const ANTI_DIAG: [BitBoard; 15] = [
     BitBoard(0x8000000000000000),
 ];
 
+const UNICODE_PIECES: [&str; 12] = ["♙", "♘", "♗", "♖", "♕", "♔", "♟", "♞", "♝", "♜", "♛", "♚"];
+const ASCII_PIECES: [&str; 12] = ["p", "n", "b", "r", "q", "k", "P", "N", "B", "R", "Q", "K"];
+
 // relevant bishop occupancy bit count for each square
 //pub const BISHOP_RELEVANT_BITS: [u8; 64] = [
 //6, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 5, 5, 5, 5, 7, 9, 9, 7, 5, 5,
@@ -121,9 +124,53 @@ pub fn convert(game_status: &mut GameStatus) {
     block.set_bit(Square::G2);
     block.set_bit(Square::E2);
     block.set_bit(Square::D4);
-    block.print();
 
     queen(Square::E4, block).print();
+
+    let pieces = from_bitpos(pos);
+    print_board(pieces, true);
+}
+
+// return a bitboard array with all the piece bitboards
+pub fn from_bitpos(pos: BitPos) -> [BitBoard; 12] {
+    let pieces: [BitBoard; 12] = [
+        pos.bp, pos.bn, pos.bb, pos.br, pos.bq, pos.bk, pos.wp, pos.wn, pos.wb, pos.wr, pos.wq,
+        pos.wk,
+    ];
+    pieces
+}
+
+// print chess board from array of bitboards
+pub fn print_board(pieces: [BitBoard; 12], unicode: bool) {
+    let mut x = 8;
+    for rank in 0..8 {
+        x -= 1;
+        print!("\x1b[34m{}\x1b[0m  ", x + 1);
+        for file in 0..8 {
+            let square = rank * 8 + file;
+            let mut piece: Option<u8> = None;
+
+            for i in 0..12 {
+                if pieces[i].get_bit(match_u32_to_sq(square)) {
+                    piece = Some(i as u8);
+                    break;
+                }
+            }
+
+            if let Some(piece) = piece {
+                if unicode {
+                    print!("{} ", UNICODE_PIECES[piece as usize]);
+                } else {
+                    print!("{} ", ASCII_PIECES[piece as usize]);
+                }
+            } else {
+                print!(". ");
+            }
+        }
+        println!();
+    }
+    println!();
+    println!("\x1b[34m   a b c d e f g h\x1b[0m");
 }
 
 impl BitPos {
@@ -185,12 +232,13 @@ impl BitBoard {
         }
     }
     // generate bitboard from piece list
-    pub fn gen(pieces: &mut [Option<Piece>; 64], compare: char) -> Self {
+    pub fn gen(pieces: &[Option<Piece>; 64], compare: char) -> Self {
         let mut bin_str = String::new();
+        let mut pieces_rev = pieces.clone();
         // reverse pieces array
-        pieces.reverse();
+        pieces_rev.reverse();
 
-        for piece in pieces {
+        for piece in pieces_rev {
             if let Some(piece) = piece {
                 if !(piece.symbol == compare) {
                     bin_str.push('0');

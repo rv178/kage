@@ -58,7 +58,7 @@ fn help() {
         Parse FEN string.
 
 \x1b[33mEXAMPLES:\x1b[0m
-    cranium --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/PNBQKB1R w KQkq - 1 2\"
+    cranium --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 \"
 
 Link: \x1b[4m\x1b[34mhttps://github.com/rv178/cranium\x1b[0m",
         env!("CARGO_PKG_VERSION")
