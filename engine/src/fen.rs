@@ -12,7 +12,7 @@ pub const CMK_POS: &str = "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1B
 #[macro_export]
 macro_rules! fen_log {
     ($($arg:tt)*) => {
-        println!("\x1b[32mCranium (fen):\x1b[0m {}", format!($($arg)*));
+        println!("\x1b[32mFen:\x1b[0m {}", format!($($arg)*));
     };
 }
 

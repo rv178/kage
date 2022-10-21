@@ -1,4 +1,4 @@
-# Cranium
+# Kage
 
 Chess engine written in Rust.
 
@@ -32,7 +32,7 @@ A binary will be copied to `./bin/cranium`
 #### FEN string parsing
 
 ```
-cranium --fen "<FEN_STRING>"
+kage --fen "<FEN_STRING>"
 ```
 
 #### Note: this project is a WIP

@@ -7,7 +7,7 @@ use std::process::exit;
 #[macro_export]
 macro_rules! main_log {
     ($($arg:tt)*) => {
-        println!("\x1b[32mCranium (main):\x1b[0m {}", format!($($arg)*));
+        println!("\x1b[32mMain:\x1b[0m {}", format!($($arg)*));
     };
 }
 
@@ -49,11 +49,11 @@ fn main() {
 
 fn help() {
     let help_msg = format!(
-        "\x1b[32m\x1b[1mCranium \x1b[0m {}
+        "\x1b[32m\x1b[1mKage \x1b[0m {}
     Chess engine written in Rust.
 
 \x1b[33mUSAGE:\x1b[0m
-    cranium \x1b[32m[OPTIONS]\x1b[0m
+    kage \x1b[32m[OPTIONS]\x1b[0m
 
 \x1b[33mOPTIONS:\x1b[0m
     \x1b[32m-h, --help\x1b[0m
@@ -62,9 +62,9 @@ fn help() {
         Parse FEN string.
 
 \x1b[33mEXAMPLES:\x1b[0m
-    cranium --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 \"
+    kage --fen \"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 \"
 
-Link: \x1b[4m\x1b[34mhttps://github.com/rv178/cranium\x1b[0m",
+Link: \x1b[4m\x1b[34mhttps://github.com/rv178/kage\x1b[0m",
         env!("CARGO_PKG_VERSION")
     );
     println!("{}", help_msg);

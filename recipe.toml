@@ -1,5 +1,5 @@
 [env]
-BIN_NAME="cranium"
+BIN_NAME="kage"
 COMPILER_FLAGS="--release"
 INSTALL_PREFIX="/usr/bin"
 
