@@ -25,7 +25,7 @@ bake setup
 bake
 ```
 
-A binary will be copied to `./bin/cranium`
+A binary will be copied to `./bin/kage`
 
 ### Usage
 

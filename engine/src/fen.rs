@@ -2,7 +2,7 @@ use crate::utils::match_u32_to_sq;
 use crate::{Colour, GameStatus, Piece, Square};
 use std::process::exit;
 
-pub const EMPTY_BOARD: &str = "8/8/8/8/8/8/8/8 w - - ";
+pub const EMPTY_BOARD: &str = "8/8/8/8/8/8/8/8 w - - 0 0";
 pub const START_POS: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ";
 pub const TRICKY_POS: &str =
     "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1 ";
@@ -17,8 +17,7 @@ macro_rules! fen_log {
 }
 
 pub fn default() -> GameStatus {
-    let default_gs = return_state("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    default_gs
+    return_state("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 }
 
 pub fn return_state(fen: &str) -> GameStatus {
@@ -127,39 +126,35 @@ fn en_passant(input: &str) -> Option<Vec<Square>> {
                         exit(1);
                     }
 
-                    let file;
-
-                    match chars[i] {
-                        'a' => file = 0,
-                        'b' => file = 1,
-                        'c' => file = 2,
-                        'd' => file = 3,
-                        'e' => file = 4,
-                        'f' => file = 5,
-                        'g' => file = 6,
-                        'h' => file = 7,
+                    let file = match chars[i] {
+                        'a' => 0,
+                        'b' => 1,
+                        'c' => 2,
+                        'd' => 3,
+                        'e' => 4,
+                        'f' => 5,
+                        'g' => 6,
+                        'h' => 7,
                         _ => {
                             fen_log!("Invalid FEN string: Failed to parse en passant square.");
                             exit(1);
                         }
-                    }
+                    };
 
-                    let rank;
-
-                    match chars[i + 1] {
-                        '1' => rank = 7,
-                        '2' => rank = 6,
-                        '3' => rank = 5,
-                        '4' => rank = 4,
-                        '5' => rank = 3,
-                        '6' => rank = 2,
-                        '7' => rank = 1,
-                        '8' => rank = 0,
+                    let rank = match chars[i + 1] {
+                        '1' => 7,
+                        '2' => 6,
+                        '3' => 5,
+                        '4' => 4,
+                        '5' => 3,
+                        '6' => 2,
+                        '7' => 1,
+                        '8' => 0,
                         _ => {
                             fen_log!("Invalid FEN string: Failed to parse en passant square.");
                             exit(1);
                         }
-                    }
+                    };
 
                     sq = rank * 8 + file;
 
@@ -259,7 +254,7 @@ pub fn print_board(game_state: &GameStatus) {
                 print!("| {} ", board[square]);
             }
         }
-        print!("| {} \n", x + 1);
+        println!("| {} ", x + 1);
         println!("+---+---+---+---+---+---+---+---+");
     }
 

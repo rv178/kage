@@ -1,6 +1,7 @@
 use engine::bitboard::*;
 use engine::*;
 use engine::{fen, fen_log};
+use std::cmp::Ordering;
 use std::env;
 use std::process::exit;
 
@@ -14,8 +15,11 @@ macro_rules! main_log {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() > 1 {
-        match args[1].as_str() {
+    match args.len().cmp(&1) {
+        Ordering::Equal => {
+            init();
+        }
+        Ordering::Greater => match args[1].as_str() {
             "-h" | "--help" => {
                 help();
             }
@@ -41,9 +45,10 @@ fn main() {
                 main_log!("Invalid option '{}'.", args[1]);
                 exit(1);
             }
+        },
+        Ordering::Less => {
+            exit(1);
         }
-    } else if args.len() == 1 {
-        init();
     }
 }
 

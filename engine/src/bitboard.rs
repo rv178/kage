@@ -98,16 +98,42 @@ pub fn convert(game_status: &mut GameStatus) -> BitPos {
 }
 
 // return a bitboard array with all the piece bitboards
-pub fn from_bitpos(pos: &BitPos) -> [BitBoard; 12] {
-    let pieces: [BitBoard; 12] = [
-        pos.bp, pos.bn, pos.bb, pos.br, pos.bq, pos.bk, pos.wp, pos.wn, pos.wb, pos.wr, pos.wq,
-        pos.wk,
+pub fn from_bitpos(pos: &BitPos) -> [[BitBoard; 6]; 2] {
+    let pieces: [[BitBoard; 6]; 2] = [
+        [pos.bp, pos.bn, pos.bb, pos.br, pos.bq, pos.bk],
+        [pos.wp, pos.wn, pos.wb, pos.wr, pos.wq, pos.wk],
     ];
     pieces
 }
 
+pub fn occupancies(pieces: [[BitBoard; 6]; 2], side: Colour) -> BitBoard {
+    let mut occ: BitBoard = BitBoard::empty();
+
+    match side {
+        Colour::White => {
+            for i in 0..6 {
+                occ.0 |= pieces[1][i].0;
+            }
+        }
+        Colour::Black => {
+            for i in 0..6 {
+                occ.0 |= pieces[0][i].0;
+            }
+        }
+        Colour::Undefined => {
+            for i in 0..2 {
+                for j in 0..6 {
+                    occ.0 |= pieces[i][j].0;
+                }
+            }
+        }
+    }
+
+    occ
+}
+
 // print chess board from array of bitboards
-pub fn print_bb_pieces(pieces: [BitBoard; 12], unicode: bool) {
+pub fn print_bb_pieces(pieces: [[BitBoard; 6]; 2], unicode: bool) {
     let mut x = 8;
     for rank in 0..8 {
         x -= 1;
@@ -116,10 +142,13 @@ pub fn print_bb_pieces(pieces: [BitBoard; 12], unicode: bool) {
             let square = rank * 8 + file;
             let mut piece: Option<u8> = None;
 
-            for i in 0..12 {
-                if pieces[i].get_bit(match_u32_to_sq(square)) {
-                    piece = Some(i as u8);
-                    break;
+            for (x, a) in pieces.iter().enumerate() {
+                for (y, b) in a.iter().enumerate() {
+                    if b.get_bit(match_u32_to_sq(square)) {
+                        let piece_num = y + x * 6;
+                        piece = Some(piece_num as u8);
+                        break;
+                    }
                 }
             }
 
@@ -137,6 +166,7 @@ pub fn print_bb_pieces(pieces: [BitBoard; 12], unicode: bool) {
     }
     println!();
     println!("\x1b[34m   a b c d e f g h\x1b[0m");
+    println!();
 }
 
 impl BitPos {
@@ -172,7 +202,7 @@ impl BitBoard {
         self.0 == 0
     }
     // check if equal
-    pub fn eq(&self, rhs: Self) -> bool {
+    pub fn is_eq(&self, rhs: Self) -> bool {
         self.0 == rhs.0
     }
     // set bit at given square (0 -> 1)
@@ -200,13 +230,13 @@ impl BitBoard {
     // generate bitboard from piece list
     pub fn gen(pieces: &[Option<Piece>; 64], compare: char) -> Self {
         let mut bin_str = String::new();
-        let mut pieces_rev = pieces.clone();
+        let mut pieces_rev = *pieces;
         // reverse pieces array
         pieces_rev.reverse();
 
         for piece in pieces_rev {
             if let Some(piece) = piece {
-                if !(piece.symbol == compare) {
+                if piece.symbol != compare {
                     bin_str.push('0');
                 } else {
                     bin_str.push('1');
@@ -254,8 +284,8 @@ impl BitBoard {
         Self(u64::from_str_radix(&bin_str, 2).unwrap())
     }
     // from string
-    pub fn from_str(bin_str: String) -> Self {
-        Self(u64::from_str_radix(&bin_str, 2).unwrap())
+    pub fn from_string(bin_str: String) -> Self {
+        Self(u64::from_str_radix(&bin_str, 2).unwrap().reverse_bits())
     }
     // print bitboard
     pub fn print(&self) {
