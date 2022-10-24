@@ -1,11 +1,12 @@
 use crate::{bitboard::*, movegen::*, utils::match_u32_to_sq};
-use movegen::pawn;
+use movegen::{king, knight, pawn};
 
 pub mod bitboard;
 pub mod fen;
 pub mod movegen;
 pub mod utils;
 
+// piece enum, eg. black bishop [kind: Bishop, colour: Black, symbol: 'b']
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Piece {
     pub kind: Kind,
@@ -13,6 +14,7 @@ pub struct Piece {
     pub symbol: char,
 }
 
+// piece type
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Kind {
     King,
@@ -23,6 +25,7 @@ pub enum Kind {
     Pawn,
 }
 
+// colour / side to move
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Colour {
     Black,
@@ -109,10 +112,10 @@ pub fn get_attacks(side: Colour, pieces: [[BitBoard; 6]; 2]) -> BitBoard {
 
     // we need to put all_other_pieces(pieces, board_for_the_piece) as the occupancy mask
     let pawn_attacks = pawn::all(pawns, side);
-    let knight_attacks = knight_bb(knights, BitBoard::empty());
+    let knight_attacks = knight::all(knights, BitBoard::empty());
     let bishop_attacks = bishop_bb(bishops, all_other_pieces(pieces, bishops));
     let rook_attacks = rook_bb(rooks, all_other_pieces(pieces, rooks));
-    let king_attacks = king_bb(king, BitBoard::empty());
+    let king_attacks = king::all(king, BitBoard::empty());
     let queen_attacks = queen_bb(queen, all_other_pieces(pieces, queen));
 
     BitBoard(
@@ -133,24 +136,22 @@ pub fn get_all_attacks(pieces: [[BitBoard; 6]; 2]) -> BitBoard {
 }
 
 impl Square {
+    // check if square is attacked
     pub fn is_attacked(&self, side: Colour, pieces: [[BitBoard; 6]; 2]) -> bool {
         //println!("Square: {:?}, Side: {:?}", self, side);
         let occ = BitBoard::from_sq(*self);
-        if get_attacks(side, pieces).0 & occ.0 != 0 {
-            true
-        } else {
-            false
-        }
+        // return true or false depending on if the square is attacked (check if it intersects with
+        // bitboard containing all attacks)
+        get_attacks(side, pieces).0 & occ.0 != 0
     }
 }
 
 pub fn init() {
-    //let mut game_state = fen::return_state("3r4/1b6/3r4/R2P4/8/8/2k5/3R4 w - - 0 0");
-    let mut game_state = fen::return_state(fen::START_POS);
+    let mut game_state = fen::return_state("3r4/1b6/3r4/R2P4/8/8/2k5/3R4 w - - 0 0");
+    //let mut game_state = fen::return_state(fen::START_POS);
     fen::print_all(&game_state);
     println!();
-    let pos = convert(&mut game_state);
-    let pieces = from_bitpos(&pos);
+    let pieces = convert(&mut game_state.pieces);
     print_bb_pieces(pieces, true);
 
     get_attacks(Colour::White, pieces).print();

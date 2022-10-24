@@ -1,9 +1,7 @@
 use engine::bitboard::*;
 use engine::*;
 use engine::{fen, fen_log};
-use std::cmp::Ordering;
-use std::env;
-use std::process::exit;
+use std::{cmp::Ordering, env, process::exit};
 
 #[macro_export]
 macro_rules! main_log {
@@ -30,9 +28,7 @@ fn main() {
                     let mut game_state = fen::return_state(fen);
                     fen::print_all(&game_state);
                     println!();
-                    let pos = convert(&mut game_state);
-
-                    let pieces = from_bitpos(&pos);
+                    let pieces = convert(&mut game_state.pieces);
                     print_bb_pieces(pieces, true);
                 } else {
                     fen_log!("Error: missing FEN string");

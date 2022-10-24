@@ -18,6 +18,7 @@ pub fn hyp_quint(sq: Square, occ: BitBoard, mask: u64) -> BitBoard {
     BitBoard(forward)
 }
 
+// lookup rook attacks for a rook on a particular square
 pub fn rook(sq: Square, occ: BitBoard) -> BitBoard {
     let tr = sq as usize / 8;
     let tf = sq as usize % 8;
@@ -25,6 +26,7 @@ pub fn rook(sq: Square, occ: BitBoard) -> BitBoard {
     BitBoard(hyp_quint(sq, occ, FILES[tf].0).0 | hyp_quint(sq, occ, RANKS[tr].0).0)
 }
 
+// lookup rook attacks for all bits (bitboard containing rook occupancies)
 pub fn rook_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
     let mut bb = BitBoard::empty();
 
@@ -44,6 +46,7 @@ pub fn rook_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
     bb
 }
 
+// lookup bishop attacks for a bishop on a particular square
 pub fn bishop(sq: Square, occ: BitBoard) -> BitBoard {
     let tr = sq as usize / 8;
     let tf = sq as usize % 8;
@@ -57,6 +60,7 @@ pub fn bishop(sq: Square, occ: BitBoard) -> BitBoard {
     )
 }
 
+// lookup bishop attacks for all bits (bitboard containing bishop occupancies)
 pub fn bishop_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
     let mut bb = BitBoard::empty();
 
@@ -79,50 +83,12 @@ pub fn bishop_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
     bb
 }
 
+// lookup queen attacks for a queen on a particular square
 pub fn queen(sq: Square, occ: BitBoard) -> BitBoard {
     BitBoard(rook(sq, occ).0 | bishop(sq, occ).0)
 }
 
-pub fn knight(sq: Square) -> BitBoard {
-    let board = BitBoard::from_sq(sq);
-
-    let no_no_east = knight::no_no_east(board);
-    let no_no_west = knight::no_no_west(board);
-    let so_so_east = knight::so_so_east(board);
-    let so_so_west = knight::so_so_west(board);
-    let no_ea_east = knight::no_ea_east(board);
-    let so_ea_east = knight::so_ea_east(board);
-    let no_we_west = knight::no_we_west(board);
-    let so_we_west = knight::so_we_west(board);
-
-    BitBoard(
-        no_no_east.0
-            | no_no_west.0
-            | so_so_east.0
-            | so_so_west.0
-            | no_ea_east.0
-            | so_ea_east.0
-            | no_we_west.0
-            | so_we_west.0,
-    )
-}
-
-pub fn knight_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
-    let mut bb = BitBoard::empty();
-
-    for rank in 0..8 {
-        for file in 0..8 {
-            let square = rank * 8 + file;
-
-            if board.0 & (1 << square) != 0 {
-                let board = knight(match_u32_to_sq(square));
-                bb.0 |= board.0;
-            }
-        }
-    }
-    BitBoard(bb.0 - (bb.0 & occ.0))
-}
-
+// lookup queen attacks for all bits (bitboard containing queen occupancies)
 pub fn queen_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
     let mut bb = BitBoard::empty();
 
@@ -137,35 +103,4 @@ pub fn queen_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
         }
     }
     bb
-}
-
-pub fn king(sq: Square) -> BitBoard {
-    let board = BitBoard::from_sq(sq);
-
-    let no = king::no(board);
-    let so = king::so(board);
-    let ea = king::ea(board);
-    let we = king::we(board);
-    let no_ea = king::no_ea(board);
-    let no_we = king::no_we(board);
-    let so_ea = king::so_ea(board);
-    let so_we = king::so_we(board);
-
-    BitBoard(no.0 | so.0 | ea.0 | we.0 | no_ea.0 | no_we.0 | so_ea.0 | so_we.0)
-}
-
-pub fn king_bb(board: BitBoard, occ: BitBoard) -> BitBoard {
-    let mut bb = BitBoard::empty();
-
-    for rank in 0..8 {
-        for file in 0..8 {
-            let square = rank * 8 + file;
-
-            if board.0 & (1 << square) != 0 {
-                let board = king(match_u32_to_sq(square));
-                bb.0 |= board.0;
-            }
-        }
-    }
-    BitBoard(bb.0 - (bb.0 & occ.0))
 }

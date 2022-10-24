@@ -1,25 +1,9 @@
 use crate::{utils::match_u32_to_sq, Colour};
-use crate::{GameStatus, Piece, Square};
+use crate::{Piece, Square};
 use std::process::exit;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BitBoard(pub u64);
-
-#[derive(Debug, Clone)]
-pub struct BitPos {
-    pub wp: BitBoard, // white pawns
-    pub wn: BitBoard, // white knights
-    pub wb: BitBoard, // white bishops
-    pub wr: BitBoard, // white rooks
-    pub wq: BitBoard, // white queen
-    pub wk: BitBoard, // white king
-    pub bp: BitBoard, // black pawns
-    pub bn: BitBoard, // black knights
-    pub bb: BitBoard, // black bishops
-    pub br: BitBoard, // black rooks
-    pub bq: BitBoard, // black queen
-    pub bk: BitBoard, // black king
-}
 
 pub const UNIVERSAL: BitBoard = BitBoard(18446744073709551615);
 pub const NOT_A_FILE: BitBoard = BitBoard(18374403900871474942);
@@ -28,6 +12,7 @@ pub const NOT_HG_FILE: BitBoard = BitBoard(4557430888798830399);
 pub const NOT_AB_FILE: BitBoard = BitBoard(18229723555195321596);
 pub const EMPTY: BitBoard = BitBoard(0);
 
+// all ranks
 pub const RANKS: [BitBoard; 8] = [
     BitBoard(255),                  // 8th rank
     BitBoard(65280),                // 7th rank
@@ -39,6 +24,7 @@ pub const RANKS: [BitBoard; 8] = [
     BitBoard(18374686479671623680), // 1st rank
 ];
 
+// all files
 pub const FILES: [BitBoard; 8] = [
     BitBoard(72340172838076673),   // a file
     BitBoard(144680345676153346),  // b file
@@ -91,21 +77,30 @@ pub const ANTI_DIAG: [BitBoard; 15] = [
 const UNICODE_PIECES: [&str; 12] = ["♙", "♘", "♗", "♖", "♕", "♔", "♟", "♞", "♝", "♜", "♛", "♚"];
 const ASCII_PIECES: [&str; 12] = ["p", "n", "b", "r", "q", "k", "P", "N", "B", "R", "Q", "K"];
 
-// convert piece list to bitboard
-pub fn convert(game_status: &mut GameStatus) -> BitPos {
-    let pos: BitPos = BitPos::new(&mut game_status.pieces);
-    pos
-}
-
-// return a bitboard array with all the piece bitboards
-pub fn from_bitpos(pos: &BitPos) -> [[BitBoard; 6]; 2] {
+// convert piece list to array of bitboards
+pub fn convert(pieces: &mut [Option<Piece>; 64]) -> [[BitBoard; 6]; 2] {
     let pieces: [[BitBoard; 6]; 2] = [
-        [pos.bp, pos.bn, pos.bb, pos.br, pos.bq, pos.bk],
-        [pos.wp, pos.wn, pos.wb, pos.wr, pos.wq, pos.wk],
+        [
+            BitBoard::gen(pieces, 'p'), // black pawns
+            BitBoard::gen(pieces, 'n'), // black knights
+            BitBoard::gen(pieces, 'b'), // black bishops
+            BitBoard::gen(pieces, 'r'), // black rooks
+            BitBoard::gen(pieces, 'q'), // black queens
+            BitBoard::gen(pieces, 'k'), // black king
+        ],
+        [
+            BitBoard::gen(pieces, 'P'), // white pawns
+            BitBoard::gen(pieces, 'N'), // white knights
+            BitBoard::gen(pieces, 'B'), // white bishops
+            BitBoard::gen(pieces, 'R'), // white rooks
+            BitBoard::gen(pieces, 'Q'), // white queens
+            BitBoard::gen(pieces, 'K'), // white king
+        ],
     ];
     pieces
 }
 
+// get all occupancies of pieces of a particular colour
 pub fn occupancies(pieces: [[BitBoard; 6]; 2], side: Colour) -> BitBoard {
     let mut occ: BitBoard = BitBoard::empty();
 
@@ -167,25 +162,6 @@ pub fn print_bb_pieces(pieces: [[BitBoard; 6]; 2], unicode: bool) {
     println!();
     println!("\x1b[34m   a b c d e f g h\x1b[0m");
     println!();
-}
-
-impl BitPos {
-    fn new(pieces: &mut [Option<Piece>; 64]) -> BitPos {
-        BitPos {
-            wp: BitBoard::gen(pieces, 'P'),
-            wn: BitBoard::gen(pieces, 'N'),
-            wb: BitBoard::gen(pieces, 'B'),
-            wr: BitBoard::gen(pieces, 'R'),
-            wq: BitBoard::gen(pieces, 'Q'),
-            wk: BitBoard::gen(pieces, 'K'),
-            bp: BitBoard::gen(pieces, 'p'),
-            bn: BitBoard::gen(pieces, 'n'),
-            bb: BitBoard::gen(pieces, 'b'),
-            br: BitBoard::gen(pieces, 'r'),
-            bq: BitBoard::gen(pieces, 'q'),
-            bk: BitBoard::gen(pieces, 'k'),
-        }
-    }
 }
 
 impl BitBoard {
